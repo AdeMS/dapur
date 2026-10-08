@@ -26,8 +26,8 @@
     },
     "require": {
         "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
+        "adems/dapur-resep": "^2.6 || ^3.5",
         "composer/package-versions-deprecated": "^1.11.99.5",
-        "laminas/laminas-component-installer": "^2.6 || ^3.5",
         "laminas/laminas-config-aggregator": "^1.18",
         "laminas/laminas-servicemanager": "^3.22",
         "laminas/laminas-diactoros": "^3.8.0",
@@ -36,7 +36,7 @@
         "mezzio/mezzio-helpers": "^5.20",
         "mezzio/mezzio-laminasrouter": "^3.9.0",
         "mezzio/mezzio-laminasviewrenderer": "^2.15",
-        "adems/adems-asset": "^0.1",
+        "adems/dapur-asset": "^0.1",
         "twbs/bootstrap": "^5.3",
         "twbs/bootstrap-icons": "^1.13.1"
     },

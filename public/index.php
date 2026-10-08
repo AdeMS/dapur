@@ -23,7 +23,7 @@ chdir($_SERVER['DAPUR_ROOT'] ?? dirname(__DIR__));
  * Memuat autoloader yang dihasilkan oleh Composer untuk mengelola dependensi 
  * dan autoloading kelas.
  */
-require 'vendor/autoload.php';
+require getcwd() . '/vendor/autoload.php';
 
 (function() {
     /** 
@@ -35,7 +35,7 @@ require 'vendor/autoload.php';
      * 
      * @var \Psr\Container\ContainerInterface $container 
     */
-    $container = require 'container/config.php';
+    $container = require getcwd() . '/container/container.php';
 
     /** 
      * Mengambil instance aplikasi Mezzio dari container menggunakan kunci \Mezzio\Application::class
@@ -62,8 +62,8 @@ require 'vendor/autoload.php';
      * yang akan menentukan bagaimana aplikasi merespons permintaan HTTP yang masuk. Dengan memis
      * kan konfigurasi ini ke dalam file terpisah, kita dapat menjaga kode tetap modular dan mudah dikelola.
      */
-    (require 'container/pipeline.php')($dapur, $factory, $container);
-    (require 'container/router.php')($dapur, $factory, $container);
+    (require getcwd() . '/container/pipeline.php')($dapur, $factory, $container);
+    (require getcwd() . '/container/router.php')($dapur, $factory, $container);
 
     /**
      * Menjalankan aplikasi dengan memanggil metode run() pada instance $dapur. 

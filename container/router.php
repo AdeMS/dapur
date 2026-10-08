@@ -64,11 +64,15 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     }
 
     foreach (array_merge($packageRoutes, $routes, $selectedRoutes) as $route) {
-        $app->route(
+        $appRoute = $app->route(
             $route['path'],
             $route['middleware'],
             $route['allowed_methods'] ?? [],
             $route['name'] ?? null
         );
+
+        if (isset($route['options'])) {
+            $appRoute->setOptions($route['options']);
+        }
     }
 };

@@ -26,7 +26,7 @@
     },
     "require": {
         "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
-        "adems/dapur-resep": "^2.6 || ^3.5",
+        "adems/dapur-component-installer": "^2.6 || ^3.5",
         "composer/package-versions-deprecated": "^1.11.99.5",
         "laminas/laminas-config-aggregator": "^1.18",
         "laminas/laminas-servicemanager": "^3.22",
@@ -67,5 +67,6 @@
             "cp -R vendor/twbs/bootstrap-icons/font data/asset/bootstrap/font"
         ]
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

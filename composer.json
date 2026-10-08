@@ -21,7 +21,7 @@
         "sort-packages": true,
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
-            "laminas/laminas-component-installer": true
+            "adems/laminas-component-installer": true
         }
     },
     "require": {

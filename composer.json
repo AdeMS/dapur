@@ -26,6 +26,9 @@
         "forum": "https://discourse.laminas.dev"
     },
     "config": {
+        "allow-plugins": {
+            "laminas/laminas-component-installer": true
+        },
         "sort-packages": true
     },
     "require": {

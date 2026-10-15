@@ -46,6 +46,11 @@
         "twbs/bootstrap": "^5.3",
         "twbs/bootstrap-icons": "^1.13.1"
     },
+    "autoload": {
+        "psr-4": {
+            "Dapur\\": "module/Dapur/src/"
+        }
+    },
     "scripts": {
         "post-create-project-cmd": [
             "@setup-bootstrap",

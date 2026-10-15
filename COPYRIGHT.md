@@ -1,0 +1,1 @@
+Copyright (c) 2000 Tempat AdeMS, tempat Ade M Saragih untuk bermain dan belajar. (https://www.adems.id/)

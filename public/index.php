@@ -50,14 +50,14 @@ $headMeta = [
                     <h5>Tempat AdeMS untuk bermain dan belajar membuat website.</h5>
                     <p class="lead mt-4">
                         Selamat! Anda telah berhasil memasang
-                        <a href="https://github.com/adems/adems-dapur" target="_blank">Dapur AdeMS</a>.
+                        <a href="https://github.com/adems/dapur" target="_blank">Dapur AdeMS</a>.
                     </p>
                 </div>
             </div>
         </main>
         <footer class="footer mt-auto py-3 bg-body-tertiary">
             <div class="container">
-                <span class="text-body-secondary">Hak cipta &copy;<?= date('Y') ?> <a href="https://www.adems.id/" class="fw-bold text-decoration-none">Tempat AdeMS</a> untuk bermain dan belajar.</span>
+                <span class="text-body-secondary">Hak cipta &copy;2000-<?= date('Y') ?> <a href="https://www.adems.id/" class="fw-bold text-decoration-none">Tempat AdeMS</a> untuk bermain dan belajar.</span>
             </div>
         </footer>
 

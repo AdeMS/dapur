@@ -17,4 +17,19 @@ ServerSignature Off
     # Mengalihkan permintaan http ke https
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -l [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [NC,L]
+
+    RewriteCond $0::%{REQUEST_URI} ^([^:]*+(?::[^:]*+)*?)::(/.+?)\1$
+    RewriteRule .+ - [E=BASE:%2]
+    RewriteRule .* %{ENV:BASE}index.php [NC,L]
+
 </IfModule>
+
+SetEnv DAPUR_ENV "development"
+#SetEnv DAPUR_ROOT "/www/public"

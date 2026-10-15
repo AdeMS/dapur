@@ -1,0 +1,12 @@
+{
+    "name": "adems/dapur",
+    "description": "Dapur AdeMS, tempat Ade M Saragih untuk bermain dan belajar membuat website",
+    "type": "project",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "dapur",
+        "adems",
+        "html"
+    ],
+    "homepage": "https://www.adems.id"
+}

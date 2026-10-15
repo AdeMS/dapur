@@ -8,3 +8,13 @@ ServerSignature Off
     # Aktifkan FollowSymlinks
     Options +FollowSymlinks
 </IfModule>
+
+# Jika modul penulisan ulang (rewrite) diaktifkan
+<IfModule mod_rewrite.c>
+    # Nyalakan mesin penulisan ulang
+    RewriteEngine On
+
+    # Mengalihkan permintaan http ke https
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>

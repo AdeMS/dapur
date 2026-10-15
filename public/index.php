@@ -1,66 +1,74 @@
 <?php
-$headTitle = "Beranda - Dapur AdeMS";
-$headMeta = [
-    "description" => "Tempat Ade M Saragih untuk belajar dan bermain membuat website",
-    "keywords"    => "dapur adems, tempat adems, adems, belajar dan bermain, belajar membuat website",
-    "author"      => "Ade M Saragih",
-];
 
-?>
-<!DOCTYPE html>
-<html lang="id" class="h-100" data-bs-theme="dapur">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-<? foreach($headMeta as $name => $content): ?>
-        <meta name="<?=$name;?>" content="<?=$content;?>" />
-<? endforeach ?>
-        <title><?=$headTitle;?></title>
-        <link href="/asset/adems/img/favicon.ico" rel="shortcut icon" />
-        <link href="/asset/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <link href="/asset/bootstrap/font/bootstrap-icons.min.css" rel="stylesheet">
-        <link href="/asset/dapur/css/style.css" rel="stylesheet">
-    </head>
-    <body class="d-flex flex-column h-100">
-        <header>
-            <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-                <div class="container-fluid">
-                    <a class="navbar-brand py-0" href="https://github.com/adems/adems-dapur">
-                        <img src="/asset/dapur/img/brand-logo.png" alt="Dapur AdeMS" height="40" />
-                    </a>
-                    <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="toggler-icon top-bar"></span>
-                        <span class="toggler-icon middle-bar"></span>
-                        <span class="toggler-icon bottom-bar"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarCollapse">
-                        <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="/"><i class="bi bi-house-heart"></i> Beranda</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
-        <main class="flex-shrink-0 mt-5 pt-4">
-            <div class="container">
-                <div class="jumbotron">
-                    <h1 class="mb-0">Selamat datang di Dapur AdeMS</h1>
-                    <h5>Tempat AdeMS untuk bermain dan belajar membuat website.</h5>
-                    <p class="lead mt-4">
-                        Selamat! Anda telah berhasil memasang
-                        <a href="https://github.com/adems/dapur" target="_blank">Dapur AdeMS</a>.
-                    </p>
-                </div>
-            </div>
-        </main>
-        <footer class="footer mt-auto py-3 bg-body-tertiary">
-            <div class="container">
-                <span class="text-body-secondary">Hak cipta &copy;2000-<?= date('Y') ?> <a href="https://www.adems.id/" class="fw-bold text-decoration-none">Tempat AdeMS</a> untuk bermain dan belajar.</span>
-            </div>
-        </footer>
+declare(strict_types=1);
 
-        <script src="/asset/bootstrap/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-    </body>
-</html>
+/**
+ * Menampilkan semua pesan error di lingkungan pengembangan, 
+ * tetapi menyembunyikannya di lingkungan lain sperti lingkungan produksi.
+ */
+if ($_SERVER['DAPUR_ENV'] === 'development') {
+    error_reporting(E_ALL);
+    ini_set("display_errors", '1');
+}
+
+/**
+ * Mengubah direktori kerja saat ini ke direktori root proyek,
+ * yang ditentukan oleh variabel lingkungan DAPUR_ROOT, atau ke direktori induk
+ * jika DAPUR_ROOT tidak ditentukan. Hal ini memastikan bahwa semua file dan sumber daya
+ * yang diperlukan dapat diakses dengan benar dari direktori root proyek.
+ */
+chdir($_SERVER['DAPUR_ROOT'] ?? dirname(__DIR__));
+
+/**
+ * Memuat autoloader yang dihasilkan oleh Composer untuk mengelola dependensi 
+ * dan autoloading kelas.
+ */
+require getcwd() . '/vendor/autoload.php';
+
+(function() {
+    /** 
+     * Memuat konfigurasi container dependency injection dari file config/container.php 
+     * dan menyimpannya dalam variabel $container. Container ini akan digunakan untuk
+     * mengelola dan menyuntikkan dependensi ke dalam aplikasi, seperti layanan, middleware,
+     * dan komponen lainnya. Dengan menggunakan container, kita dapat mengatur dependensi dengan lebih mudah
+     * dan menjaga kode tetap bersih dan terorganisir. 
+     * 
+     * @var \Psr\Container\ContainerInterface $container 
+    */
+    $container = require getcwd() . '/container/config.php';
+
+    /** 
+     * Mengambil instance aplikasi Mezzio dari container menggunakan kunci \Mezzio\Application::class
+     * dan menyimpannya dalam variabel $app. Aplikasi ini akan digunakan untuk mengkonfigurasi
+     * middleware, routing, dan menjalankan aplikasi.
+     * 
+     * @var \Mezzio\Application $dapur 
+    */
+    $dapur = $container->get(\Mezzio\Application::class);
+
+    /** 
+     * Mengambil instance MiddlewareFactory dari container menggunakan kunci \Mezzio\MiddlewareFactory::class
+     * dan menyimpannya dalam variabel $factory. MiddlewareFactory ini akan digunakan untuk membuat
+     * instance middleware yang diperlukan dalam pipeline aplikasi.
+     * 
+     * @var \Mezzio\MiddlewareFactory $factory 
+    */
+    $factory = $container->get(\Mezzio\MiddlewareFactory::class);
+
+    /**
+     * Menjalankan konfigurasi pipeline dan routing aplikasi dengan memanggil file config/pipeline.php
+     * dan config/routes.php, serta menyuntikkan $dapur, $factory,
+     * dan $container sebagai argumen. File-file ini akan berisi konfigurasi untuk middleware dan routing aplikasi,
+     * yang akan menentukan bagaimana aplikasi merespons permintaan HTTP yang masuk. Dengan memis
+     * kan konfigurasi ini ke dalam file terpisah, kita dapat menjaga kode tetap modular dan mudah dikelola.
+     */
+    (require getcwd() . '/container/pipeline.php')($dapur, $factory, $container);
+    (require getcwd() . '/container/router.php')($dapur, $factory, $container);
+
+    /**
+     * Menjalankan aplikasi dengan memanggil metode run() pada instance $dapur. 
+     * Ini akan memulai loop aplikasi dan mulai menerima serta merespons permintaan HTTP yang masuk
+     * sesuai dengan konfigurasi middleware dan routing yang telah ditentukan sebelumnya.
+     */
+    $dapur->run();
+})();

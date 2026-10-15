@@ -7,11 +7,39 @@
         "dapur",
         "adems",
         "php",
-        "html5"
+        "html5",
+        "laminas",
+        "mezzio",
+        "middleware",
+        "psr",
+        "psr-7",
+        "psr-11",
+        "psr-15"
     ],
     "homepage": "https://github.com/adems/dapur",
+    "support": {
+        "docs": "https://docs.mezzio.dev/mezzio/",
+        "issues": "https://github.com/mezzio/mezzio-skeleton/issues",
+        "source": "https://github.com/mezzio/mezzio-skeleton",
+        "rss": "https://github.com/mezzio/mezzio-skeleton/releases.atom",
+        "chat": "https://laminas.dev/chat",
+        "forum": "https://discourse.laminas.dev"
+    },
+    "config": {
+        "sort-packages": true
+    },
     "require": {
-        "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+        "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
+        "composer/package-versions-deprecated": "^1.11.99.5",
+        "laminas/laminas-component-installer": "^2.6 || ^3.5",
+        "laminas/laminas-config-aggregator": "^1.18",
+        "laminas/laminas-servicemanager": "^3.23",
+        "laminas/laminas-diactoros": "^3.8",
+        "laminas/laminas-stdlib": "^3.21",
+        "mezzio/mezzio": "^3.23",
+        "mezzio/mezzio-helpers": "^5.20",
+        "mezzio/mezzio-laminasrouter": "^3.12",
+        "mezzio/mezzio-laminasviewrenderer": "^2.19",
         "twbs/bootstrap": "^5.3",
         "twbs/bootstrap-icons": "^1.13.1"
     },

@@ -1,2 +1,10 @@
 # Non-aktifkan tanda ciri server pada saat memulai
 ServerSignature Off
+
+# Jika modul negosiasi (negotiation) diaktifkan
+<IfModule mod_negotiation.c>
+    # Nonaktifkan MultiViews dan Indeks
+    Options -MultiViews -Indexes
+    # Aktifkan FollowSymlinks
+    Options +FollowSymlinks
+</IfModule>

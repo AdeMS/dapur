@@ -29,15 +29,15 @@
             "@setup-bootstrap-icons"
         ],
         "serve": [
-          "Composer\\Config::disableProcessTimeout",
-          "php -S 0.0.0.0:8080 -t public/"
+            "Composer\\Config::disableProcessTimeout",
+            "php -S 0.0.0.0:8080 -t public/"
         ],
         "setup-bootstrap": [
-            "php -r 'if (is_dir(\"public/asset/bootstrap\")) unlink(\"public/asset/bootstrap\");'",
+            "rm -rf public/asset/bootstrap",
             "cp -R vendor/twbs/bootstrap/dist public/asset/bootstrap"
         ],
         "setup-bootstrap-icons": [
-            "php -r 'if (is_dir(\"public/asset/bootstrap/font\")) unlink(\"public/asset/bootstrap/font\");'",
+            "rm -rf public/asset/bootstrap/font",
             "cp -R vendor/twbs/bootstrap-icons/font public/asset/bootstrap/font"
         ]
     }

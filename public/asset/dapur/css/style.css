@@ -1,0 +1,151 @@
+/*!
+ * CSS stylesheet untuk Dapur AdeMS
+ * Tempat Ade M Saragih untuk bermain dan belajar membuat website.
+ */
+
+[data-bs-theme=dapur] {
+    --bs-dark: #00221c;
+    --bs-dark-rgb: 0, 34, 28;
+    --bs-link-color: #0a5700;
+    --bs-link-color-rgb: 10, 87, 0;
+    --bs-link-decoration: underline;
+    --bs-link-hover-color: #009655;
+    --bs-link-hover-color-rgb: 0, 150, 85;
+    --bs-link-hover-decoration: none;
+}
+
+/* X-Small devices (portrait phones, kurang dari 576px) */
+
+/**
+ * Untuk media dengan ukuran `xs` tidak diperlukan pernyataan kondisional.
+ * Ini dikarenakan `xs` adalah media default di dalam Bootstrap,
+ * di mana metode "mobile first" diterapkan sebagai dasar.
+ */
+body {
+    background-attachment: fixed;
+    background-image: url('/asset/dapur/img/bg-image.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+/* Tombol navigasi */
+header .navbar-toggler {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    transition: .5s ease-in-out;
+}
+header .navbar-toggler,
+header .navbar-toggler:focus,
+header .navbar-toggler:active,
+header .navbar-toggler-icon:focus {
+    outline: none;
+    box-shadow: none;
+    border: 0;
+}
+header .navbar-toggler span {
+    margin: 0;
+    padding: 0;
+}
+/* Membuat tombol navigasi, menyusun menjadi 3 tumpuk balok dan memberi warna. */
+header .toggler-icon {
+    display: block;
+    position: absolute;
+    height: 3px;
+    width: 100%;
+    background: linear-gradient(263deg, rgba(0, 255, 0, 1) 0%, rgb(252,74,74,1) 100%);
+    border-radius: 3px;
+    opacity: 1;
+    left: 0;
+    transform: rotate(0deg);
+    transition: .25s ease-in-out;
+}
+.middle-bar {
+    margin-top: 0px;
+}
+/* ketika tombol navigasi ditekan */
+/* balok bagian atas dari tombol navigasi */
+.navbar-toggler .top-bar {
+    /* letakkan balok di tengah-tengah tombol navigasi */
+    margin-top: 0px;
+    /* putar ke 135 derajat searah jarum jam */
+    transform: rotate(135deg);
+}
+/* balok bagian tengah dari tombol navigasi */
+.navbar-toggler .middle-bar {
+    /* sembunyikan balok */
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+/* balok bagian bawah dari tombol navigasi */
+.navbar-toggler .bottom-bar {
+    /* letakkan balok di tengah-tengah tombol navigasi */
+    margin-top: 0px;
+    /* putar ke 135 derajat melawan arah jarum jam. */
+    transform: rotate(-135deg);
+}
+/* ketika tombol navigasi dalam kondisi tertutup */
+.navbar-toggler.collapsed .top-bar {
+    /* letakkan balok -10px dari tengah-tengah tombol navigasi */
+    margin-top: -10px;
+    /* putar kembaali ke 0 derajat. */
+    transform: rotate(0deg);
+}
+/* balok bagian tengah dari tombol navigasi */
+.navbar-toggler.collapsed .middle-bar {
+    /* munculkan balok */
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+/* balok bagian bawah dari tombol navigasi */
+.navbar-toggler.collapsed .bottom-bar {
+    /* letakkan balok 10px dari tengah-tengah tombol navigasi */
+    margin-top: 10px;
+    /* putar kembaali ke 0 derajat. */
+    transform: rotate(0deg);
+}
+/* Akhir CSS dari Tombol navigasi */
+
+a {
+    color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
+    text-decoration: var(--bs-link-decoration);
+}
+a:hover {
+    text-decoration: var(--bs-link-hover-decoration);
+}
+
+.jumbotron {
+    padding: 3rem !important;
+    margin-bottom: 1.5rem !important;
+    background-color: rgba(var(--bs-light-rgb), 0.90 ) !important;
+    border-radius: var(--bs-border-radius) !important;
+}
+
+.opacity-90 {
+    opacity: 0.90;
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+
+}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+
+}
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) {
+
+}

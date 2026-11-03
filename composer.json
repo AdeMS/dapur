@@ -16,7 +16,8 @@
     "require": {
         "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
         "twbs/bootstrap": "^5.3",
-        "twbs/bootstrap-icons": "^1.13.1"
+        "twbs/bootstrap-icons": "^1.13.1",
+        "laminas/laminas-component-installer": "^3.8"
     },
     "scripts": {
         "post-create-project-cmd": [

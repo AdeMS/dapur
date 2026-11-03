@@ -17,6 +17,9 @@ $aggregator = new ConfigAggregator([
     \Mezzio\ConfigProvider::class,
     \Mezzio\Router\ConfigProvider::class,
     \Laminas\Diactoros\ConfigProvider::class,
+
+    // Default App module config
+    App\ConfigProvider::class,
 ]);
 
 // Mengembalikan konfigurasi yang telah digabungkan

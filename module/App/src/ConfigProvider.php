@@ -18,6 +18,7 @@ final class ConfigProvider
     {
         return [
             'factories' => [
+                Middleware\DefaultHomeMiddleware::class => Middleware\DefaultHomeMiddlewareFactory::class,
             ],
         ];
     }

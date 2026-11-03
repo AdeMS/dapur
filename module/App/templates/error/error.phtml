@@ -1,0 +1,9 @@
+<?php $this->headTitle('Terjadi kesalahan'); ?>
+<div class="container">
+    <h1><?= $this->escapeHtml((string) $this->status) ?> <?= $this->escapeHtml((string) $this->reason) ?></h1>
+    <p class="lead">Maaf, terjadi kesalahan saat memproses permintaan Anda.</p>
+<?php if (isset($this->error) && $this->error): ?>
+    <h5>Detail</h5>
+    <pre class="bg-body-tertiary p-3"><?= $this->escapeHtml((string) $this->error) ?></pre>
+<?php endif ?>
+</div>

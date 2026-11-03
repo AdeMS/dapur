@@ -27,6 +27,7 @@ final class ConfigProvider
     {
         return [
             'paths' => [
+                'dapur'  => [__DIR__ . '/../templates/dapur'],
                 'layout' => [__DIR__ . '/../templates/layout'],
                 'error'  => [__DIR__ . '/../templates/error'],
             ],

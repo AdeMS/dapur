@@ -8,6 +8,11 @@ use Laminas\ConfigAggregator\PhpFileProvider;
 
 // Memuat konfigurasi dari berbagai penyedia konfigurasi
 $aggregator = new ConfigAggregator([
+    \Laminas\View\ConfigProvider::class,
+    \Mezzio\LaminasView\ConfigProvider::class,
+    \Laminas\ServiceManager\ConfigProvider::class,
+    \Mezzio\Router\FastRouteRouter\ConfigProvider::class,
+    \Laminas\HttpHandlerRunner\ConfigProvider::class,
     \Mezzio\Helper\ConfigProvider::class,
     \Mezzio\ConfigProvider::class,
     \Mezzio\Router\ConfigProvider::class,

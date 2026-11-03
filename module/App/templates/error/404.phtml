@@ -1,0 +1,17 @@
+<?php
+$this->headTitle('Halaman tidak ditemukan');
+?>
+<div class="container pb-5">
+    <div class="jumbotron text-center">
+        <i class="bi bi-signpost-split display-1 text-body-secondary"></i>
+        <h1 class="display-5 fw-bold mt-3">404</h1>
+        <h2 class="h4 mb-3">Halaman tidak ditemukan</h2>
+        <p class="lead mb-1">Maaf, halaman yang Anda cari tidak ada atau sudah dipindahkan.</p>
+<?php if (isset($this->request)) : ?>
+        <p class="text-body-secondary mb-4">
+            <code><?= $this->escapeHtml($this->request->getMethod()) ?> <?= $this->escapeHtml($this->request->getUri()->getPath()) ?></code>
+        </p>
+<?php endif; ?>
+        <a href="/" class="btn btn-dark"><i class="bi bi-house-door"></i> Kembali ke halaman utama</a>
+    </div>
+</div>

@@ -62,6 +62,9 @@ return function (Application $app, MiddlewareFactory $factory, ContainerInterfac
     // Mendaftarkan middleware DispatchMiddleware untuk mengeksekusi handler yang sesuai berdasarkan hasil routing.
     $app->pipe(DispatchMiddleware::class);
 
+    // Menampilkan halaman bawaan pada halaman utama (/) jika belum ada route 'home'.
+    $app->pipe(App\Middleware\DefaultHomeMiddleware::class);
+
     // Pada titik ini, jika tidak ada middleware yang mengembalikan respons,
     // NotFoundHandler akan dijalankan; middleware ini mengembalikan respons 404.
     $app->pipe(NotFoundHandler::class);

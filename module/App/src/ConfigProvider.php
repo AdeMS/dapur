@@ -17,6 +17,7 @@ final class ConfigProvider
     {
         return [
             'paths' => [
+                'layout' => [__DIR__ . '/../templates/layout'],
                 'error'  => [__DIR__ . '/../templates/error'],
             ],
         ];

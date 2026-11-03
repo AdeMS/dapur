@@ -9,7 +9,16 @@ final class ConfigProvider
     public function __invoke(): array
     {
         return [
-            'templates' => $this->getTemplates(),
+            'dependencies' => $this->getDependencies(),
+            'templates'    => $this->getTemplates(),
+        ];
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            'factories' => [
+            ],
         ];
     }
 

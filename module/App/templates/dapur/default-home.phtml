@@ -1,13 +1,233 @@
 <?php
 $this->headTitle('Beranda');
+$this->headMeta()
+    ->appendName('description', 'Dapur AdeMS berhasil dipasang. Tambahkan modul halaman home Anda sendiri.');
+
+// Contoh kode untuk setiap langkah, ditampilkan apa adanya (di-escape).
+$langkah = [
+    [
+        'judul'  => 'Buat struktur folder modul',
+        'ikon'   => 'bi-folder-plus',
+        'teks'   => 'Buat folder modul baru di dalam <code>module/</code>. Pada contoh ini modulnya bernama <strong>Home</strong>.',
+        'berkas' => null,
+        'kode'   => <<<'KODE'
+module/
+├── App/                        ← modul bawaan Dapur AdeMS
+└── Home/                       ← modul baru Anda
+    ├── src/
+    │   ├── ConfigProvider.php
+    │   └── Handler/
+    │       ├── HomePageHandler.php
+    │       └── HomePageHandlerFactory.php
+    └── templates/
+        └── home/
+            └── home-page.phtml
+KODE,
+    ],
+    [
+        'judul'  => 'Buat handler halaman',
+        'ikon'   => 'bi-gear',
+        'teks'   => 'Handler menerima request dan merender template di dalam <code>layout::default</code>.',
+        'berkas' => 'module/Home/src/Handler/HomePageHandler.php',
+        'kode'   => <<<'KODE'
+<?php
+
+declare(strict_types=1);
+
+namespace Home\Handler;
+
+use Laminas\Diactoros\Response\HtmlResponse;
+use Mezzio\Template\TemplateRendererInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+
+final class HomePageHandler implements RequestHandlerInterface
+{
+    public function __construct(
+        private readonly TemplateRendererInterface $template
+    ) {
+    }
+
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        return new HtmlResponse($this->template->render('home::home-page', [
+            'layout' => 'layout::default',
+        ]));
+    }
+}
+KODE,
+    ],
+    [
+        'judul'  => 'Buat factory untuk handler',
+        'ikon'   => 'bi-boxes',
+        'teks'   => 'Factory menyiapkan dependensi yang dibutuhkan handler.',
+        'berkas' => 'module/Home/src/Handler/HomePageHandlerFactory.php',
+        'kode'   => <<<'KODE'
+<?php
+
+declare(strict_types=1);
+
+namespace Home\Handler;
+
+use Mezzio\Template\TemplateRendererInterface;
+use Psr\Container\ContainerInterface;
+
+final class HomePageHandlerFactory
+{
+    public function __invoke(ContainerInterface $container): HomePageHandler
+    {
+        return new HomePageHandler($container->get(TemplateRendererInterface::class));
+    }
+}
+KODE,
+    ],
+    [
+        'judul'  => 'Buat template halaman',
+        'ikon'   => 'bi-file-earmark-richtext',
+        'teks'   => 'Isi halaman home Anda. Template ini akan otomatis dibungkus oleh layout Dapur AdeMS.',
+        'berkas' => 'module/Home/templates/home/home-page.phtml',
+        'kode'   => <<<'KODE'
+<?php
+$this->headTitle('Beranda');
 ?>
 <div class="container">
     <div class="jumbotron">
-        <h1 class="mb-0">Dapur AdeMS</h1>
-        <p class="lead mt-4">
-            Selamat anda telah berhasil menginstall
-            <a href="https://github.com/adems/adems-dapur" target="_blank">Dapur AdeMS</a>.<br />
-            Namun halaman home belum ditambahkan/tidak ditemukan.
+        <h1>Halo, ini halaman home saya!</h1>
+        <p class="lead">Mulai buat website Anda di sini.</p>
+    </div>
+</div>
+KODE,
+    ],
+    [
+        'judul'  => 'Buat ConfigProvider modul',
+        'ikon'   => 'bi-sliders',
+        'teks'   => 'ConfigProvider mendaftarkan factory handler dan lokasi template modul.',
+        'berkas' => 'module/Home/src/ConfigProvider.php',
+        'kode'   => <<<'KODE'
+<?php
+
+declare(strict_types=1);
+
+namespace Home;
+
+final class ConfigProvider
+{
+    public function __invoke(): array
+    {
+        return [
+            'dependencies' => [
+                'factories' => [
+                    Handler\HomePageHandler::class => Handler\HomePageHandlerFactory::class,
+                ],
+            ],
+            'templates' => [
+                'paths' => [
+                    'home' => [__DIR__ . '/../templates/home'],
+                ],
+            ],
+        ];
+    }
+}
+KODE,
+    ],
+    [
+        'judul'  => 'Daftarkan autoload modul',
+        'ikon'   => 'bi-box-seam',
+        'teks'   => 'Tambahkan namespace <code>Home\\</code> di bagian <code>autoload</code>, lalu jalankan <code>composer dump-autoload</code>.',
+        'berkas' => 'composer.json',
+        'kode'   => <<<'KODE'
+"autoload": {
+    "psr-4": {
+        "App\\": "module/App/src/",
+        "Home\\": "module/Home/src/"
+    }
+},
+KODE,
+    ],
+    [
+        'judul'  => 'Aktifkan modul',
+        'ikon'   => 'bi-toggle-on',
+        'teks'   => 'Tambahkan ConfigProvider modul ke daftar konfigurasi, di bawah <code>App\\ConfigProvider</code>.',
+        'berkas' => 'config/config.php',
+        'kode'   => <<<'KODE'
+    // Default App module config
+    App\ConfigProvider::class,
+
+    // Modul halaman home
+    Home\ConfigProvider::class,
+]);
+KODE,
+    ],
+    [
+        'judul'  => 'Tambahkan route home',
+        'ikon'   => 'bi-signpost-split',
+        'teks'   => 'Hubungkan alamat <code>/</code> ke handler Anda dengan nama route <code>home</code>.',
+        'berkas' => 'config/routes.php',
+        'kode'   => <<<'KODE'
+return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
+    $app->get('/', Home\Handler\HomePageHandler::class, 'home');
+};
+KODE,
+    ],
+];
+?>
+<div class="container pb-5">
+    <div class="jumbotron">
+        <span class="badge text-bg-success mb-3"><i class="bi bi-check-circle-fill"></i> Instalasi berhasil</span>
+        <h1 class="display-5 fw-bold">Selamat Datang di Dapur AdeMS</h1>
+        <p class="lead mb-4">
+            <a href="https://github.com/adems/adems-dapur" target="_blank">Dapur AdeMS</a>
+            sudah terpasang dan berjalan dengan baik.
         </p>
+        <div class="alert alert-warning d-flex align-items-start mb-0" role="alert">
+            <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+            <div>
+                <strong>Halaman home Anda belum dibuat.</strong><br />
+                Halaman yang sedang Anda lihat ini adalah halaman sementara.
+                Halaman ini akan otomatis diganti begitu Anda menambahkan route <code>home</code>
+                dengan mengikuti langkah-langkah di bawah.
+            </div>
+        </div>
+    </div>
+
+    <div class="jumbotron">
+        <h2 class="h3 mb-1"><i class="bi bi-list-check"></i> Cara Membuat Halaman Home</h2>
+        <p class="text-body-secondary mb-4">
+            Ikuti <?= count($langkah) ?> langkah berikut untuk membuat modul <strong>Home</strong>.
+            Nama modul boleh Anda ganti sesuai keinginan.
+        </p>
+
+        <div class="accordion" id="langkahHome">
+<?php foreach ($langkah as $i => $item) : ?>
+<?php $nomor = $i + 1; ?>
+            <div class="accordion-item">
+                <h3 class="accordion-header">
+                    <button class="accordion-button<?= $i > 0 ? ' collapsed' : '' ?>" type="button" data-bs-toggle="collapse" data-bs-target="#langkah<?= $nomor ?>" aria-expanded="<?= $i === 0 ? 'true' : 'false' ?>" aria-controls="langkah<?= $nomor ?>">
+                        <span class="badge rounded-pill text-bg-dark me-3"><?= $nomor ?></span>
+                        <i class="bi <?= $item['ikon'] ?> me-2"></i>
+                        <?= $this->escapeHtml($item['judul']) ?>
+                    </button>
+                </h3>
+                <div id="langkah<?= $nomor ?>" class="accordion-collapse collapse<?= $i === 0 ? ' show' : '' ?>" data-bs-parent="#langkahHome">
+                    <div class="accordion-body">
+                        <p><?= $item['teks'] ?></p>
+<?php if ($item['berkas'] !== null) : ?>
+                        <div class="small text-body-secondary mb-1"><i class="bi bi-file-earmark-code"></i> <?= $this->escapeHtml($item['berkas']) ?></div>
+<?php endif; ?>
+                        <pre class="bg-dark text-light p-3 rounded small mb-0"><code><?= $this->escapeHtml($item['kode']) ?></code></pre>
+                    </div>
+                </div>
+            </div>
+<?php endforeach; ?>
+        </div>
+
+        <div class="alert alert-success d-flex align-items-start mt-4 mb-0" role="alert">
+            <i class="bi bi-lightbulb-fill fs-4 me-3"></i>
+            <div>
+                <strong>Selesai!</strong> Muat ulang halaman ini.
+                Jika semua langkah benar, halaman home Anda akan tampil menggantikan halaman ini.
+            </div>
+        </div>
     </div>
 </div>

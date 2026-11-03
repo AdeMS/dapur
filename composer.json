@@ -28,7 +28,8 @@
         "mezzio/mezzio": "^3.28",
         "laminas/laminas-servicemanager": "^4.5",
         "laminas/laminas-config-aggregator": "^1.20",
-        "mezzio/mezzio-fastroute": "^3.14"
+        "mezzio/mezzio-fastroute": "^3.14",
+        "mezzio/mezzio-laminasviewrenderer": "^3.0"
     },
     "scripts": {
         "post-create-project-cmd": [

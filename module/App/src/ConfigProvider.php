@@ -19,6 +19,10 @@ final class ConfigProvider
         return [
             'factories' => [
                 Middleware\DefaultHomeMiddleware::class => Middleware\DefaultHomeMiddlewareFactory::class,
+
+                // Cache data aplikasi (lihat config/autoload/cache.global.php)
+                \Psr\SimpleCache\CacheInterface::class   => Cache\SimpleCacheFactory::class,
+                \Psr\Cache\CacheItemPoolInterface::class => Cache\CacheItemPoolFactory::class,
             ],
         ];
     }

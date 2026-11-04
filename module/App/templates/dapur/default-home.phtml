@@ -170,6 +170,20 @@ return function (Application $app, MiddlewareFactory $factory, ContainerInterfac
 };
 KODE,
     ],
+    [
+        'judul'  => 'Hapus cache konfigurasi',
+        'ikon'   => 'bi-arrow-clockwise',
+        'teks'   => 'Konfigurasi Dapur AdeMS disimpan di cache <code>data/cache/config-cache.php</code>. '
+            . 'Hapus cache ini agar modul baru dari langkah 7 terbaca. '
+            . 'Lakukan juga setiap kali Anda mengubah konfigurasi atau ConfigProvider.',
+        'berkas' => null,
+        'kode'   => <<<'KODE'
+composer clear-config-cache
+
+# atau hapus file berikut secara manual:
+# data/cache/config-cache.php
+KODE,
+    ],
 ];
 ?>
 <div class="container pb-5">

@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * Contoh pengaturan koneksi database (laminas-db).
+ *
+ * Cara memakai:
+ * 1. Salin file ini menjadi `database.local.php` di folder yang sama.
+ * 2. Biarkan aktif SATU contoh di bawah sesuai database Anda, lalu isi datanya.
+ * 3. Jalankan `composer clear-config-cache`, lalu `composer cek-database`.
+ *
+ * File `*.local.php` tidak masuk Git, sehingga password Anda tidak ikut ter-commit.
+ */
+
+declare(strict_types=1);
+
+return [
+    'db' => [
+        // MySQL / MariaDB
+        'driver'   => 'Pdo_Mysql',
+        'hostname' => '127.0.0.1',
+        'port'     => 3306,
+        'database' => 'nama_database',
+        'username' => 'nama_pengguna',
+        'password' => 'kata_sandi',
+        'charset'  => 'utf8mb4',
+
+        // PostgreSQL
+        // 'driver'   => 'Pdo_Pgsql',
+        // 'hostname' => '127.0.0.1',
+        // 'port'     => 5432,
+        // 'database' => 'nama_database',
+        // 'username' => 'nama_pengguna',
+        // 'password' => 'kata_sandi',
+
+        // SQLite (tanpa server database; folder data/database/ harus bisa ditulis web server)
+        // 'driver'   => 'Pdo_Sqlite',
+        // 'database' => dirname(__DIR__, 2) . '/data/database/dapur.sqlite',
+    ],
+];

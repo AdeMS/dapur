@@ -24,6 +24,7 @@ menambahkan halaman Anda sendiri.
 - Web server dengan document root diarahkan ke folder `public/`
   (Apache dengan `mod_rewrite`, atau PHP built-in server untuk pengembangan)
 - Folder `data/cache/` harus bisa ditulis oleh web server
+  (lihat [Izin folder cache](#izin-folder-cache))
 
 ## Instalasi
 
@@ -190,6 +191,50 @@ public function handle(ServerRequestInterface $request): ResponseInterface
 ```
 
 Data cache disimpan di `data/cache/app/` dengan masa berlaku bawaan 1 jam.
+
+### Izin folder cache
+
+Web server (misalnya Apache) harus bisa menulis ke `data/cache/` dan `data/cache/app/`.
+Jika tidak bisa, situs tetap berjalan, tetapi **cache konfigurasi tidak akan dibuat tanpa
+pesan error apa pun**, dan cache data aplikasi akan gagal saat dipakai.
+
+Cari tahu dulu user yang menjalankan web server Anda, misalnya `www-data` (Debian/Ubuntu)
+atau `apache` (RHEL/CentOS), lalu pilih salah satu cara berikut.
+
+**Cara 1 — Grup (disarankan untuk server produksi)**
+
+Jadikan web server pemilik folder, dan beri grup Anda hak tulis:
+
+```bash
+chown -R <user-web-server>:<grup-anda> data/cache
+chmod -R 2775 data/cache
+```
+
+Angka `2` (setgid) membuat file baru di dalam folder otomatis ikut grup tersebut, sehingga Anda
+tetap bisa menghapus cache, misalnya dengan `composer clear-config-cache`. Perintah `chown`
+biasanya perlu dijalankan sebagai root.
+
+**Cara 2 — 777 (praktis untuk pengembangan atau server pribadi)**
+
+```bash
+chmod 777 data/cache data/cache/app
+```
+
+> **Perhatian:** dengan izin `777`, semua user di server bisa menulis ke folder tersebut.
+> Di server bersama (shared hosting), user lain bisa menaruh file PHP palsu sebagai cache
+> konfigurasi yang kemudian dijalankan oleh situs Anda. Jangan gunakan cara ini di server bersama.
+
+Pada cara 2, file dan subfolder cache data aplikasi tetap dibuat oleh web server dengan izin
+bawaan `0700`/`0600`, sehingga Anda tidak bisa menghapusnya dari akun Anda sendiri. Jika Anda
+perlu menghapusnya lewat terminal, tambahkan opsi berikut pada `options` di
+`config/autoload/cache.global.php`:
+
+```php
+'dir_permission'  => 0777,
+'file_permission' => 0666,
+```
+
+Di Windows, pengaturan ini umumnya tidak diperlukan.
 
 ## Lisensi
 

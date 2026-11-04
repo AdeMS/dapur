@@ -156,7 +156,11 @@ KODE,
 
     // Modul halaman home
     Home\ConfigProvider::class,
-]);
+
+    // Memuat konfigurasi tambahan dari config/autoload/:
+    // `global.php`, `*.global.php`, `local.php`, dan `*.local.php`
+    new PhpFileProvider(realpath(__DIR__) . '/autoload/{{,*.}global,{,*.}local}.php'),
+], $cacheConfig['config_cache_path']);
 KODE,
     ],
     [

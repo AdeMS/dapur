@@ -16,6 +16,7 @@ menambahkan halaman Anda sendiri.
   langkah-langkah membuat modul halaman home.
 - **Halaman error** untuk 404 (halaman tidak ditemukan) dan kesalahan lainnya.
 - **Cache** dengan laminas-cache: cache konfigurasi dan cache data aplikasi (PSR-6 dan PSR-16).
+- **Koneksi database** dengan laminas-db: MySQL/MariaDB, PostgreSQL, atau SQLite.
 
 ## Persyaratan
 
@@ -72,22 +73,26 @@ menambahkan halaman Anda sendiri.
 ```
 dapur/
 ├── bin/
+│   ├── cek-database.php       ← menguji koneksi database
 │   └── clear-config-cache.php ← menghapus cache konfigurasi
 ├── config/
 │   ├── autoload/
-│   │   └── cache.global.php   ← pengaturan cache
+│   │   ├── cache.global.php   ← pengaturan cache
+│   │   └── database.local.php.dist ← contoh pengaturan database
 │   ├── config.php          ← daftar ConfigProvider yang digabungkan
 │   ├── container.php       ← membuat service container
 │   ├── pipeline.php        ← urutan middleware
 │   └── routes.php          ← daftar route aplikasi
 ├── data/
-│   └── cache/              ← file cache (isinya tidak masuk Git)
-│       ├── config-cache.php   ← cache konfigurasi
-│       └── app/            ← cache data aplikasi
+│   ├── cache/              ← file cache (isinya tidak masuk Git)
+│   │   ├── config-cache.php   ← cache konfigurasi
+│   │   └── app/            ← cache data aplikasi
+│   └── database/           ← file database SQLite (isinya tidak masuk Git)
 ├── module/
 │   └── App/                ← modul bawaan Dapur AdeMS
 │       ├── src/
 │       │   ├── Cache/      ← factory cache PSR-6 dan PSR-16
+│       │   ├── Db/         ← factory koneksi database
 │       │   ├── ConfigProvider.php
 │       │   └── Middleware/ ← DefaultHomeMiddleware (halaman bawaan)
 │       └── templates/
@@ -240,6 +245,90 @@ perlu menghapusnya lewat terminal, tambahkan opsi berikut pada `options` di
 ```
 
 Di Windows, pengaturan ini umumnya tidak diperlukan.
+
+## Database
+
+Dapur AdeMS memakai [laminas-db](https://docs.laminas.dev/laminas-db/) untuk koneksi ke
+MySQL/MariaDB, PostgreSQL, atau SQLite. Secara bawaan koneksi database belum diatur, dan situs
+tetap berjalan tanpa database.
+
+> PHP perlu ekstensi PDO sesuai database Anda: `pdo_mysql`, `pdo_pgsql`, atau `pdo_sqlite`.
+
+### Mengatur koneksi
+
+1. Salin file contoh:
+
+   ```bash
+   cp config/autoload/database.local.php.dist config/autoload/database.local.php
+   ```
+
+2. Buka `config/autoload/database.local.php`, biarkan aktif satu contoh sesuai database Anda,
+   lalu isi nama database, username, dan password. Contoh untuk MySQL/MariaDB:
+
+   ```php
+   return [
+       'db' => [
+           'driver'   => 'Pdo_Mysql',
+           'hostname' => '127.0.0.1',
+           'port'     => 3306,
+           'database' => 'nama_database',
+           'username' => 'nama_pengguna',
+           'password' => 'kata_sandi',
+           'charset'  => 'utf8mb4',
+       ],
+   ];
+   ```
+
+   Untuk PostgreSQL gunakan `'driver' => 'Pdo_Pgsql'` (port `5432`). Untuk SQLite cukup
+   `'driver' => 'Pdo_Sqlite'` dan `'database'` berisi lokasi file, misalnya
+   `data/database/dapur.sqlite`. Pada SQLite, folder `data/database/` harus bisa ditulis
+   oleh web server (lihat [Izin folder cache](#izin-folder-cache); caranya sama).
+
+3. Hapus cache konfigurasi, lalu uji koneksinya:
+
+   ```bash
+   composer clear-config-cache
+   composer cek-database
+   ```
+
+   Jika berhasil, akan tampil pesan seperti `Berhasil terhubung ke database MySQL 10.11.6-MariaDB.`
+   Jika gagal, pesan error dari database akan ditampilkan.
+
+File `*.local.php` di `config/autoload/` tidak masuk Git, sehingga password Anda tidak ikut
+ter-commit. Perlu diketahui, selama cache konfigurasi aktif, isi pengaturan ini juga tersimpan di
+`data/cache/config-cache.php`. Folder `data/` berada di luar document root `public/`, jadi
+tidak bisa dibuka dari browser.
+
+### Memakai koneksi di handler
+
+Ambil `Laminas\Db\Adapter\AdapterInterface` dari container lewat factory, lalu jalankan query:
+
+```php
+use Laminas\Db\Adapter\AdapterInterface;
+
+public function __construct(
+    private readonly AdapterInterface $db
+) {
+}
+
+public function handle(ServerRequestInterface $request): ResponseInterface
+{
+    $hasil = $this->db->query(
+        'SELECT id, judul FROM artikel WHERE terbit = ?',
+        [1]
+    );
+
+    foreach ($hasil as $baris) {
+        // $baris['judul'] ...
+    }
+
+    // ...
+}
+```
+
+Gunakan tanda `?` untuk nilai dari pengguna agar aman dari SQL injection. Untuk kebutuhan
+yang lebih lengkap, misalnya query builder (`Laminas\Db\Sql\Sql`) atau `TableGateway`, lihat
+[dokumentasi laminas-db](https://docs.laminas.dev/laminas-db/).
 
 ## Lisensi
 

@@ -15,6 +15,7 @@ menambahkan halaman Anda sendiri.
 - **Halaman bawaan** yang tampil selama halaman home belum dibuat, lengkap dengan
   langkah-langkah membuat modul halaman home.
 - **Halaman error** untuk 404 (halaman tidak ditemukan) dan kesalahan lainnya.
+- **Cache** dengan laminas-cache: cache konfigurasi dan cache data aplikasi (PSR-6 dan PSR-16).
 
 ## Persyaratan
 
@@ -22,6 +23,7 @@ menambahkan halaman Anda sendiri.
 - [Composer](https://getcomposer.org/download/)
 - Web server dengan document root diarahkan ke folder `public/`
   (Apache dengan `mod_rewrite`, atau PHP built-in server untuk pengembangan)
+- Folder `data/cache/` harus bisa ditulis oleh web server
 
 ## Instalasi
 
@@ -63,14 +65,23 @@ menambahkan halaman Anda sendiri.
 
 ```
 dapur/
+├── bin/
+│   └── clear-config-cache.php ← menghapus cache konfigurasi
 ├── config/
+│   ├── autoload/
+│   │   └── cache.global.php   ← pengaturan cache
 │   ├── config.php          ← daftar ConfigProvider yang digabungkan
 │   ├── container.php       ← membuat service container
 │   ├── pipeline.php        ← urutan middleware
 │   └── routes.php          ← daftar route aplikasi
+├── data/
+│   └── cache/              ← file cache (isinya tidak masuk Git)
+│       ├── config-cache.php   ← cache konfigurasi
+│       └── app/            ← cache data aplikasi
 ├── module/
 │   └── App/                ← modul bawaan Dapur AdeMS
 │       ├── src/
+│       │   ├── Cache/      ← factory cache PSR-6 dan PSR-16
 │       │   ├── ConfigProvider.php
 │       │   └── Middleware/ ← DefaultHomeMiddleware (halaman bawaan)
 │       └── templates/
@@ -99,8 +110,86 @@ sendiri. Ringkasnya:
    $app->get('/', Home\Handler\HomePageHandler::class, 'home');
    ```
 
+5. Hapus cache konfigurasi agar perubahan di langkah 3 berlaku:
+
+   ```bash
+   composer clear-config-cache
+   ```
+
 Begitu route `home` ditambahkan, halaman bawaan otomatis digantikan oleh halaman Anda.
 Contoh kode lengkapnya bisa dilihat langsung di halaman bawaan setelah instalasi.
+
+## Cache
+
+Dapur AdeMS memakai [laminas-cache](https://docs.laminas.dev/laminas-cache/) dengan adapter
+Filesystem. Pengaturannya ada di `config/autoload/cache.global.php`.
+
+### Cache konfigurasi
+
+Semua konfigurasi (`config/config.php`, ConfigProvider setiap modul, dan `config/autoload/`)
+digabungkan sekali, lalu disimpan ke `data/cache/config-cache.php`. Request berikutnya langsung
+memakai file tersebut sehingga lebih cepat.
+
+> **Penting:** selama file cache ada, perubahan konfigurasi tidak akan terlihat. Setiap kali
+> Anda mengubah konfigurasi, misalnya menambahkan modul di `config/config.php` atau mengubah
+> ConfigProvider, hapus cache konfigurasi:
+>
+> ```bash
+> composer clear-config-cache
+> ```
+>
+> Atau hapus file `data/cache/config-cache.php` secara manual.
+
+Perubahan pada `config/routes.php`, `config/pipeline.php`, dan template tidak di-cache,
+sehingga langsung berlaku.
+
+Untuk mematikan cache konfigurasi selama pengembangan, buat file `config/autoload/local.php`:
+
+```php
+<?php
+
+return [
+    Laminas\ConfigAggregator\ConfigAggregator::ENABLE_CACHE => false,
+];
+```
+
+Lalu jalankan `composer clear-config-cache` sekali.
+
+### Cache data aplikasi
+
+Untuk menyimpan data, misalnya hasil query atau respons API, ambil cache dari container
+dengan salah satu nama service berikut:
+
+| Nama service | Jenis |
+|---|---|
+| `Psr\SimpleCache\CacheInterface` | PSR-16 (paling sederhana) |
+| `Psr\Cache\CacheItemPoolInterface` | PSR-6 |
+| `Laminas\Cache\Storage\StorageInterface` | Storage laminas-cache |
+
+Contoh di dalam handler, dengan cache disuntikkan lewat factory:
+
+```php
+use Psr\SimpleCache\CacheInterface;
+
+public function __construct(
+    private readonly CacheInterface $cache
+) {
+}
+
+public function handle(ServerRequestInterface $request): ResponseInterface
+{
+    $data = $this->cache->get('data-saya');
+
+    if ($data === null) {
+        $data = $this->ambilDataYangLambat();
+        $this->cache->set('data-saya', $data, 600); // simpan selama 10 menit
+    }
+
+    // ...
+}
+```
+
+Data cache disimpan di `data/cache/app/` dengan masa berlaku bawaan 1 jam.
 
 ## Lisensi
 

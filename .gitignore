@@ -1,2 +1,6 @@
 /vendor
 composer.lock
+
+# Konfigurasi lokal (berisi password database, dll.)
+/config/autoload/local.php
+/config/autoload/*.local.php

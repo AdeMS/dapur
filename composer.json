@@ -29,7 +29,10 @@
         "laminas/laminas-servicemanager": "^4.5",
         "laminas/laminas-config-aggregator": "^1.20",
         "mezzio/mezzio-fastroute": "^3.14",
-        "mezzio/mezzio-laminasviewrenderer": "^3.0"
+        "mezzio/mezzio-laminasviewrenderer": "^3.0",
+        "laminas/laminas-cache": "^4.3",
+        "laminas/laminas-cache-storage-adapter-filesystem": "^3.2",
+        "laminas/laminas-serializer": "^4.0"
     },
     "autoload": {
         "psr-4": {
@@ -45,6 +48,7 @@
             "@setup-bootstrap",
             "@setup-bootstrap-icons"
         ],
+        "clear-config-cache": "php bin/clear-config-cache.php",
         "serve": [
           "Composer\\Config::disableProcessTimeout",
           "php -S 0.0.0.0:8080 -t public/"

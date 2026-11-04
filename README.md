@@ -28,32 +28,37 @@ menambahkan halaman Anda sendiri.
 
 ## Instalasi
 
-1. Clone repository ini:
+1. Unduh Dapur AdeMS dengan salah satu cara berikut.
+
+   **Dengan Composer (disarankan):**
+
+   ```bash
+   composer create-project adems/dapur dapur
+   cd dapur
+   ```
+
+   **Dengan Git:**
 
    ```bash
    git clone https://github.com/AdeMS/dapur.git
    cd dapur
-   ```
-
-2. Pasang dependensi:
-
-   ```bash
    composer install
    ```
 
-3. Salin aset Bootstrap dan Bootstrap Icons ke folder `public/asset/bootstrap`:
+   Kedua cara di atas otomatis menyalin aset Bootstrap dan Bootstrap Icons ke folder
+   `public/asset/bootstrap`. Jika perlu menyalin ulang, jalankan:
 
    ```bash
    composer setup-bootstrap
    composer setup-bootstrap-icons
    ```
 
-   > **Catatan untuk Windows:** kedua script di atas memakai perintah `rm` dan `cp`, yang tidak
-   > tersedia di Command Prompt. Salin foldernya secara manual:
+   > **Catatan untuk Windows:** penyalinan aset memakai perintah `rm` dan `cp`, yang tidak
+   > tersedia di Command Prompt, sehingga langkah ini akan gagal. Salin foldernya secara manual:
    > - `vendor/twbs/bootstrap/dist` → `public/asset/bootstrap`
    > - `vendor/twbs/bootstrap-icons/font` → `public/asset/bootstrap/font`
 
-4. Jalankan server pengembangan:
+2. Jalankan server pengembangan:
 
    ```bash
    composer serve

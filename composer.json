@@ -40,7 +40,7 @@
         }
     },
     "scripts": {
-        "post-create-project-cmd": [
+        "post-install-cmd": [
             "@setup-bootstrap",
             "@setup-bootstrap-icons"
         ],

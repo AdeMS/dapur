@@ -23,6 +23,12 @@ final class ConfigProvider
                 // Cache data aplikasi (lihat config/autoload/cache.global.php)
                 \Psr\SimpleCache\CacheInterface::class   => Cache\SimpleCacheFactory::class,
                 \Psr\Cache\CacheItemPoolInterface::class => Cache\CacheItemPoolFactory::class,
+
+                // Koneksi database (lihat config/autoload/database.local.php.dist)
+                \Laminas\Db\Adapter\AdapterInterface::class => Db\AdapterFactory::class,
+            ],
+            'aliases' => [
+                \Laminas\Db\Adapter\Adapter::class => \Laminas\Db\Adapter\AdapterInterface::class,
             ],
         ];
     }

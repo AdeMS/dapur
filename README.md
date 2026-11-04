@@ -26,6 +26,8 @@ menambahkan halaman Anda sendiri.
   (Apache dengan `mod_rewrite`, atau PHP built-in server untuk pengembangan)
 - Folder `data/cache/` harus bisa ditulis oleh web server
   (lihat [Izin folder cache](#izin-folder-cache))
+- Jika memakai database: ekstensi PHP `pdo_mysql`, `pdo_pgsql`, atau `pdo_sqlite`
+  (lihat [Database](#database))
 
 ## Instalasi
 
@@ -217,12 +219,23 @@ Jadikan web server pemilik folder, dan beri grup Anda hak tulis:
 
 ```bash
 chown -R <user-web-server>:<grup-anda> data/cache
-chmod -R 2775 data/cache
+chmod -R 2770 data/cache
 ```
 
-Angka `2` (setgid) membuat file baru di dalam folder otomatis ikut grup tersebut, sehingga Anda
-tetap bisa menghapus cache, misalnya dengan `composer clear-config-cache`. Perintah `chown`
-biasanya perlu dijalankan sebagai root.
+Arti angka `2770`:
+
+- `2` (setgid): file baru di dalam folder otomatis ikut grup tersebut, sehingga Anda tetap
+  bisa menghapus cache, misalnya dengan `composer clear-config-cache`.
+- `77`: pemilik (web server) dan grup boleh membaca dan menulis.
+- `0`: user lain di server tidak boleh masuk ke folder sama sekali.
+
+Angka `0` terakhir penting jika Anda memakai [database](#database): cache konfigurasi
+`data/cache/config-cache.php` ikut menyimpan password database, dan file tersebut dibuat dengan
+izin `644` (bisa dibaca semua user). Dengan folder `2770`, user lain tetap tidak bisa membukanya.
+Jika situs Anda tidak memakai database, `2775` juga boleh dipakai.
+
+Perintah `chown` biasanya perlu dijalankan sebagai root. Hal yang sama berlaku untuk folder
+`data/database/` jika Anda memakai SQLite.
 
 **Cara 2 — 777 (praktis untuk pengembangan atau server pribadi)**
 
@@ -230,9 +243,10 @@ biasanya perlu dijalankan sebagai root.
 chmod 777 data/cache data/cache/app
 ```
 
-> **Perhatian:** dengan izin `777`, semua user di server bisa menulis ke folder tersebut.
-> Di server bersama (shared hosting), user lain bisa menaruh file PHP palsu sebagai cache
-> konfigurasi yang kemudian dijalankan oleh situs Anda. Jangan gunakan cara ini di server bersama.
+> **Perhatian:** dengan izin `777`, semua user di server bisa membaca dan menulis ke folder
+> tersebut, termasuk membaca password database di cache konfigurasi. Di server bersama
+> (shared hosting), user lain juga bisa menaruh file PHP palsu sebagai cache konfigurasi yang
+> kemudian dijalankan oleh situs Anda. Jangan gunakan cara ini di server bersama.
 
 Pada cara 2, file dan subfolder cache data aplikasi tetap dibuat oleh web server dengan izin
 bawaan `0700`/`0600`, sehingga Anda tidak bisa menghapusnya dari akun Anda sendiri. Jika Anda
@@ -250,9 +264,21 @@ Di Windows, pengaturan ini umumnya tidak diperlukan.
 
 Dapur AdeMS memakai [laminas-db](https://docs.laminas.dev/laminas-db/) untuk koneksi ke
 MySQL/MariaDB, PostgreSQL, atau SQLite. Secara bawaan koneksi database belum diatur, dan situs
-tetap berjalan tanpa database.
+tetap berjalan tanpa database. Koneksi baru dibuka saat ada handler yang memakainya.
+
+Yang sudah disediakan:
+
+| Bagian | Keterangan |
+|---|---|
+| `config/autoload/database.local.php.dist` | Contoh pengaturan untuk MySQL/MariaDB, PostgreSQL, dan SQLite |
+| `Laminas\Db\Adapter\AdapterInterface` | Service koneksi database di container (alias: `Laminas\Db\Adapter\Adapter`) |
+| `composer cek-database` | Menguji koneksi dan menampilkan jenis serta versi server database |
+| `data/database/` | Lokasi bawaan file SQLite (isinya tidak masuk Git) |
+
+Sudah diuji dengan MariaDB 10.7, PostgreSQL 17, dan SQLite 3.
 
 > PHP perlu ekstensi PDO sesuai database Anda: `pdo_mysql`, `pdo_pgsql`, atau `pdo_sqlite`.
+> Cek dengan `php -m`.
 
 ### Mengatur koneksi
 
@@ -291,17 +317,53 @@ tetap berjalan tanpa database.
    composer cek-database
    ```
 
-   Jika berhasil, akan tampil pesan seperti `Berhasil terhubung ke database MySQL 10.11.6-MariaDB.`
+   Jika berhasil, akan tampil pesan seperti `Berhasil terhubung ke database MySQL 10.7.3-MariaDB.`
    Jika gagal, pesan error dari database akan ditampilkan.
 
-File `*.local.php` di `config/autoload/` tidak masuk Git, sehingga password Anda tidak ikut
-ter-commit. Perlu diketahui, selama cache konfigurasi aktif, isi pengaturan ini juga tersimpan di
-`data/cache/config-cache.php`. Folder `data/` berada di luar document root `public/`, jadi
-tidak bisa dibuka dari browser.
+### Keamanan password database
+
+- File `*.local.php` di `config/autoload/` tidak masuk Git, sehingga password Anda tidak ikut
+  ter-commit.
+- Di server, batasi agar hanya Anda dan web server yang bisa membaca file pengaturan:
+
+  ```bash
+  chgrp <grup-web-server> config/autoload/database.local.php
+  chmod 640 config/autoload/database.local.php
+  ```
+
+- Selama cache konfigurasi aktif, isi pengaturan ini juga tersimpan di
+  `data/cache/config-cache.php`. Gunakan izin `2770` untuk folder `data/cache/` (lihat
+  [Izin folder cache](#izin-folder-cache)).
+- Folder `config/` dan `data/` berada di luar document root `public/`, jadi tidak bisa dibuka
+  dari browser.
+
+### Jika koneksi gagal
+
+| Pesan | Penyebab dan solusi |
+|---|---|
+| `Koneksi database belum diatur.` | File `database.local.php` belum ada, atau cache konfigurasi lama masih dipakai. Jalankan `composer clear-config-cache`. |
+| `could not find driver` | Ekstensi PDO untuk database tersebut belum aktif di PHP. |
+| `Access denied for user ...` | Username atau password salah, atau user database tidak diizinkan dari host tersebut. Di MySQL/MariaDB, `localhost` (lewat socket) dan `127.0.0.1` (lewat TCP) dianggap host yang berbeda. |
+| `Connection refused` | Server database tidak berjalan, atau `hostname`/`port` salah. |
 
 ### Memakai koneksi di handler
 
-Ambil `Laminas\Db\Adapter\AdapterInterface` dari container lewat factory, lalu jalankan query:
+Ambil `Laminas\Db\Adapter\AdapterInterface` dari container di factory handler:
+
+```php
+use Laminas\Db\Adapter\AdapterInterface;
+use Psr\Container\ContainerInterface;
+
+final class ArtikelHandlerFactory
+{
+    public function __invoke(ContainerInterface $container): ArtikelHandler
+    {
+        return new ArtikelHandler($container->get(AdapterInterface::class));
+    }
+}
+```
+
+Lalu jalankan query di dalam handler:
 
 ```php
 use Laminas\Db\Adapter\AdapterInterface;
@@ -329,6 +391,11 @@ public function handle(ServerRequestInterface $request): ResponseInterface
 Gunakan tanda `?` untuk nilai dari pengguna agar aman dari SQL injection. Untuk kebutuhan
 yang lebih lengkap, misalnya query builder (`Laminas\Db\Sql\Sql`) atau `TableGateway`, lihat
 [dokumentasi laminas-db](https://docs.laminas.dev/laminas-db/).
+
+> **Catatan:** jangan tambahkan `Laminas\Db\ConfigProvider` ke `config/config.php`. Factory
+> bawaan laminas-db 2.x belum mendukung laminas-servicemanager 4 dan akan menyebabkan fatal
+> error. Dapur AdeMS sudah menyediakan factory penggantinya di `module/App/src/Db/`, dan
+> `composer.json` mencegah laminas-component-installer menambahkannya secara otomatis.
 
 ## Lisensi
 

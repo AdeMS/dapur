@@ -3,7 +3,16 @@
  * Tempat Ade M Saragih untuk bermain dan belajar membuat website.
  */
 
-[data-bs-theme=dapur] {
+/**
+ * Tema warna Dapur.
+ *
+ * `data-tema` pada <html> memilih tema warna, sedangkan `data-bs-theme`
+ * memilih mode terang (light) atau gelap (dark). Mode diatur oleh
+ * /asset/dapur/js/tema.js sesuai pilihan pengunjung.
+ */
+
+/* Tema Dapur, mode terang */
+[data-tema=dapur] {
     --bs-dark: #00221c;
     --bs-dark-rgb: 0, 34, 28;
     --bs-link-color: #0a5700;
@@ -12,6 +21,55 @@
     --bs-link-hover-color: #009655;
     --bs-link-hover-color-rgb: 0, 150, 85;
     --bs-link-hover-decoration: none;
+
+    /* Warna dan padding panel konten (.jumbotron) */
+    --dapur-panel-rgb: 248, 249, 250;
+    --dapur-panel-padding: 3rem;
+    /* Warna bingkai halaman (navbar dan footer) */
+    --dapur-bingkai-bg: #eef5f0;
+}
+
+/* Tema Dapur, mode gelap */
+[data-tema=dapur][data-bs-theme=dark] {
+    --bs-body-bg: #101c19;
+    --bs-body-bg-rgb: 16, 28, 25;
+    --bs-secondary-bg: #1a2a26;
+    --bs-secondary-bg-rgb: 26, 42, 38;
+    --bs-tertiary-bg: #15231f;
+    --bs-tertiary-bg-rgb: 21, 35, 31;
+    --bs-border-color: #2c403a;
+    --bs-link-color: #6fcf97;
+    --bs-link-color-rgb: 111, 207, 151;
+    --bs-link-hover-color: #a3e4bf;
+    --bs-link-hover-color-rgb: 163, 228, 191;
+
+    --dapur-panel-rgb: 16, 28, 25;
+    --dapur-bingkai-bg: #00221c;
+}
+
+/* Bingkai halaman: navbar dan footer mengikuti mode terang/gelap */
+.dapur-bingkai {
+    background-color: var(--dapur-bingkai-bg);
+}
+[data-bs-theme=light] .navbar.dapur-bingkai {
+    border-bottom: 1px solid var(--bs-border-color);
+}
+[data-bs-theme=light] .footer.dapur-bingkai {
+    border-top: 1px solid var(--bs-border-color);
+}
+/* Pemilih tema berada di luar menu hamburger; menu pilihannya tetap melayang di HP */
+.dapur-tema .dropdown-menu {
+    position: absolute;
+}
+
+/* Sembunyikan tombol menu (hamburger) selama menu navigasi belum berisi item */
+.navbar:not(:has(#navbarCollapse li)) .navbar-toggler {
+    display: none;
+}
+
+/* Logo berwarna hijau muda; di mode terang digelapkan agar tetap kontras */
+[data-bs-theme=light] .navbar-brand img {
+    filter: brightness(0.6) saturate(1.3);
 }
 
 /* X-Small devices (portrait phones, kurang dari 576px) */
@@ -27,6 +85,47 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+}
+
+/* Pilihan aktif di menu dropdown (misalnya pemilih tema) memakai hijau tema */
+[data-tema=dapur] .dropdown-menu {
+    --bs-dropdown-link-active-bg: #0a5700;
+}
+
+/* Accordion yang terbuka memakai hijau tema, bukan biru bawaan Bootstrap */
+[data-tema=dapur] .accordion {
+    --bs-accordion-active-color: #0a5700;
+    --bs-accordion-active-bg: #e3f1e6;
+    --bs-accordion-btn-focus-box-shadow: 0 0 0 0.25rem rgba(10, 87, 0, 0.25);
+    --bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%230a5700' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+[data-tema=dapur][data-bs-theme=dark] .accordion {
+    --bs-accordion-active-color: #a3e4bf;
+    --bs-accordion-active-bg: #1d3a2e;
+    --bs-accordion-btn-focus-box-shadow: 0 0 0 0.25rem rgba(111, 207, 151, 0.25);
+}
+/* Bootstrap mengatur ikon accordion mode gelap langsung pada ::after, jadi ditimpa di sini */
+[data-tema=dapur][data-bs-theme=dark] .accordion-button::after {
+    --bs-accordion-btn-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23dee2e6' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    --bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23a3e4bf' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+/* Mode gelap: gambar latar yang sama, diberi lapisan gelap transparan */
+[data-bs-theme=dark] body {
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+        url('/asset/dapur/img/bg-image.png');
+}
+
+/* Mode gelap: beri garis tepi pada elemen berwarna gelap agar tidak menyatu dengan panel */
+[data-bs-theme=dark] pre.bg-dark,
+[data-bs-theme=dark] .btn-dark {
+    border: 1px solid var(--bs-border-color);
+}
+
+/* Mode gelap: badge gelap (misalnya nomor langkah) dibuat lebih terang agar terlihat */
+[data-tema=dapur][data-bs-theme=dark] .badge.text-bg-dark {
+    background-color: #3b5a50 !important;
 }
 
 /* Tombol navigasi */
@@ -116,9 +215,9 @@ a:hover {
 }
 
 .jumbotron {
-    padding: 3rem !important;
+    padding: var(--dapur-panel-padding) !important;
     margin-bottom: 1.5rem !important;
-    background-color: rgba(var(--bs-light-rgb), 0.90 ) !important;
+    background-color: rgba(var(--dapur-panel-rgb), 0.90 ) !important;
     border-radius: var(--bs-border-radius) !important;
 }
 
@@ -132,20 +231,45 @@ a:hover {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
+    /* Lebar maksimum .container Bootstrap; dipakai untuk menyejajarkan menu navbar */
+    :root {
+        --dapur-container: 720px;
+    }
 
+    /**
+     * Navbar dibagi tiga kolom: logo, menu, dan pemilih tema.
+     * Lebar kolom logo = jarak tepi layar ke tepi konten ditambah padding panel,
+     * sehingga menu sejajar dengan teks di dalam panel konten (.jumbotron).
+     * Jika layar terlalu sempit, kolom logo tidak akan lebih kecil dari logonya
+     * sendiri (max-content).
+     */
+    .navbar > .container-fluid {
+        display: grid;
+        grid-template-columns: minmax(max-content, calc((100% + 1.5rem - var(--dapur-container)) / 2 + var(--dapur-panel-padding))) 1fr auto;
+    }
+    /* Teks menu pertama tepat di garis tepi konten (nav-link memiliki padding kiri 0.5rem) */
+    .navbar .navbar-collapse > .navbar-nav {
+        margin-left: -0.5rem;
+    }
 }
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {
-
+    :root {
+        --dapur-container: 960px;
+    }
 }
 
 /* X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
-
+    :root {
+        --dapur-container: 1140px;
+    }
 }
 
 /* XX-Large devices (larger desktops, 1400px and up) */
 @media (min-width: 1400px) {
-
+    :root {
+        --dapur-container: 1320px;
+    }
 }

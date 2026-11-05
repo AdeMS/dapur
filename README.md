@@ -227,8 +227,35 @@ membuat tema warna sendiri, salin semua aturan di `style.css` yang diawali `[dat
 
 ## Modul Tambahan
 
-Modul tambahan (misalnya paket Composer `adems/dapur-*`) diaktifkan dengan mencantumkan
-ConfigProvider-nya di file `config/modul.local.php`. Buat file ini bila belum ada:
+### Memasang paket tambahan
+
+Paket Composer tambahan untuk instalasi Anda (misalnya `adems/dapur-*`) ditulis di file
+`composer.local.json`, bukan di `composer.json`. File ini digabungkan otomatis oleh
+[composer-merge-plugin](https://github.com/wikimedia/composer-merge-plugin) dan tidak masuk Git,
+sehingga `composer.json` tetap sama dengan rilis Dapur dan pembaruan lewat Git tidak bentrok.
+
+```json
+{
+    "require": {
+        "adems/dapur-multiwebsite": "^1.0"
+    }
+}
+```
+
+Lalu jalankan:
+
+```bash
+composer update
+```
+
+> Jangan memakai `composer require` untuk paket tambahan, karena perintah itu menulis ke
+> `composer.json`.
+
+### Mengaktifkan modul
+
+Modul tambahan diaktifkan dengan mencantumkan ConfigProvider-nya di file
+`config/modul.local.php` (kecuali modul yang bekerja sendiri, seperti
+`adems/dapur-multiwebsite`). Buat file ini bila belum ada:
 
 ```php
 <?php

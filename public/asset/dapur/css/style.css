@@ -21,6 +21,8 @@
     --bs-link-hover-color: #009655;
     --bs-link-hover-color-rgb: 0, 150, 85;
     --bs-link-hover-decoration: none;
+    /* Warna kode inline, misalnya <code>module/</code> */
+    --bs-code-color: #157347;
 
     /* Warna dan padding panel konten (.jumbotron) */
     --dapur-panel-rgb: 248, 249, 250;
@@ -42,6 +44,7 @@
     --bs-link-color-rgb: 111, 207, 151;
     --bs-link-hover-color: #a3e4bf;
     --bs-link-hover-color-rgb: 163, 228, 191;
+    --bs-code-color: #8fd9a8;
 
     --dapur-panel-rgb: 16, 28, 25;
     --dapur-bingkai-bg: #00221c;

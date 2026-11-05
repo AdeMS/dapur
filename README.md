@@ -12,6 +12,7 @@ menambahkan halaman Anda sendiri.
 - **Mezzio** sebagai framework PSR-15 middleware, dengan router FastRoute.
 - **laminas-view** sebagai template engine, dengan layout `layout::default`.
 - **Bootstrap 5** dan **Bootstrap Icons** untuk tampilan.
+- **Tema terang, gelap, dan otomatis** yang bisa dipilih pengunjung dari navbar.
 - **Halaman bawaan** yang tampil selama halaman home belum dibuat, lengkap dengan
   langkah-langkah membuat modul halaman home.
 - **Halaman error** untuk 404 (halaman tidak ditemukan) dan kesalahan lainnya.
@@ -124,7 +125,12 @@ dapur/
 │           └── layout/              ← layout::default
 └── public/                          ← document root web server
     ├── .htaccess                    ← aturan Apache (rewrite dan pengalihan ke HTTPS)
-    ├── asset/                       ← aset CSS, gambar, dan Bootstrap
+    ├── asset/
+    │   ├── bootstrap/               ← aset Bootstrap (disalin otomatis, tidak masuk Git)
+    │   └── dapur/
+    │       ├── css/style.css        ← tema warna dan gaya Dapur AdeMS
+    │       ├── img/                 ← logo dan gambar latar
+    │       └── js/tema.js           ← pemilih tema terang, gelap, dan otomatis
     └── index.php                    ← pintu masuk aplikasi
 ```
 
@@ -163,6 +169,60 @@ sendiri. Ringkasnya:
 
 Begitu route `home` ditambahkan, halaman bawaan otomatis digantikan oleh halaman Anda.
 Contoh kode lengkapnya bisa dilihat langsung di halaman bawaan setelah instalasi.
+
+## Tampilan
+
+### Tema terang dan gelap
+
+Ikon di ujung kanan navbar membuka pilihan tema:
+
+| Pilihan | Keterangan |
+|---|---|
+| **Terang** | Selalu memakai tema terang |
+| **Gelap** | Selalu memakai tema gelap; gambar latar ikut digelapkan |
+| **Otomatis** | Mengikuti pengaturan terang/gelap di perangkat pengunjung (bawaan) |
+
+Pilihan pengunjung disimpan di browser (`localStorage`), sehingga tetap berlaku saat situs
+dibuka kembali. Tema diterapkan oleh `public/asset/dapur/js/tema.js` sebelum halaman tampil,
+jadi tidak ada kedipan warna saat halaman dimuat.
+
+Template Anda sebaiknya memakai kelas warna Bootstrap yang mengikuti tema, misalnya
+`text-body`, `text-body-secondary`, `bg-body`, atau `bg-body-tertiary`, bukan warna tetap
+seperti `text-dark` atau `bg-white`. Dengan begitu halaman Anda tetap terbaca di kedua tema.
+
+### Menambahkan menu navigasi
+
+Tambahkan item menu di `module/App/templates/layout/default.phtml`, di dalam `<ul>` pada
+bagian bertanda `Menu navigasi situs`:
+
+```html
+<ul class="navbar-nav mb-2 mb-md-0">
+    <li class="nav-item"><a class="nav-link" href="/">Beranda</a></li>
+    <li class="nav-item"><a class="nav-link" href="/tentang">Tentang</a></li>
+</ul>
+```
+
+Di layar lebar, menu sejajar dengan teks di dalam panel konten. Di HP, menu masuk ke tombol
+menu (hamburger). Tombol ini otomatis disembunyikan selama menu belum berisi item, dan muncul
+kembali begitu Anda menambahkan item pertama.
+
+### Mengubah warna tema
+
+Warna tema Dapur diatur dengan variabel CSS di `public/asset/dapur/css/style.css`, pada
+bagian `[data-tema=dapur]` (mode terang) dan `[data-tema=dapur][data-bs-theme=dark]` (mode
+gelap):
+
+| Variabel | Kegunaan |
+|---|---|
+| `--bs-link-color`, `--bs-link-hover-color` | Warna tautan |
+| `--dapur-bingkai-bg` | Warna latar navbar dan footer |
+| `--dapur-panel-rgb` | Warna panel konten (`.jumbotron`), dalam format `R, G, B` |
+| `--dapur-panel-padding` | Jarak tepi panel ke teks di dalamnya |
+
+Atribut `data-tema="dapur"` pada `<html>` di layout menentukan tema warna yang dipakai. Untuk
+membuat tema warna sendiri, salin semua aturan di `style.css` yang diawali `[data-tema=dapur]`
+(termasuk warna accordion, menu dropdown, dan badge) dengan nama lain, misalnya
+`[data-tema=laut]`. Ubah warnanya, lalu ganti atribut di layout menjadi `data-tema="laut"`.
 
 ## Cache
 

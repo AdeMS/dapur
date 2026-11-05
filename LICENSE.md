@@ -1,6 +1,6 @@
 BSD 3-Clause License
 
-Copyright (c) 2000 Tempat AdeMS, tempat Ade M Saragih untuk bermain dan belajar.
+Copyright (c) 2000-2026 Ade M Saragih (AdeMS). https://www.adems.id/
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:

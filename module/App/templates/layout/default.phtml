@@ -3,14 +3,16 @@ $this->headTitle('Dapur AdeMS')->setSeparator(' - ');
 $this->headMeta()->appendName('author', 'Ade M Saragih');
 ?>
 <!DOCTYPE html>
-<html lang="id" class="h-100" data-bs-theme="dapur">
+<html lang="id" class="h-100" data-tema="dapur" data-bs-theme="light">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="color-scheme" content="light dark" />
 <?= $this->headMeta()->setIndent(8) ?>
 
         <?= $this->headTitle() ?>
 
+        <script src="/asset/dapur/js/tema.js"></script>
         <link href="/asset/adems/img/favicon.ico" rel="shortcut icon" />
         <link href="/asset/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="/asset/bootstrap/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -18,18 +20,32 @@ $this->headMeta()->appendName('author', 'Ade M Saragih');
     </head>
     <body class="d-flex flex-column h-100">
         <header>
-            <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+            <nav class="navbar navbar-expand-md fixed-top dapur-bingkai">
                 <div class="container-fluid">
                     <a class="navbar-brand py-0" href="https://github.com/AdeMS/dapur">
                         <img src="/asset/dapur/img/brand-logo.png" alt="Dapur AdeMS" height="40" />
                     </a>
-                    <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <!-- Pemilih tema: selalu terlihat, di HP berada di samping tombol menu -->
+                    <ul class="navbar-nav dapur-tema ms-auto order-md-last">
+                        <li class="nav-item dropdown">
+                            <button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center" id="pilihTema" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Pilih tema">
+                                <i class="bi bi-circle-half tema-ikon-aktif"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="pilihTema">
+                                <li><button type="button" class="dropdown-item d-flex align-items-center" data-tema-pilihan="light" aria-pressed="false"><i class="bi bi-sun-fill me-2"></i>Terang</button></li>
+                                <li><button type="button" class="dropdown-item d-flex align-items-center" data-tema-pilihan="dark" aria-pressed="false"><i class="bi bi-moon-stars-fill me-2"></i>Gelap</button></li>
+                                <li><button type="button" class="dropdown-item d-flex align-items-center" data-tema-pilihan="auto" aria-pressed="false"><i class="bi bi-circle-half me-2"></i>Otomatis</button></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <button class="navbar-toggler collapsed ms-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="toggler-icon top-bar"></span>
                         <span class="toggler-icon middle-bar"></span>
                         <span class="toggler-icon bottom-bar"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarCollapse">
-                        <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+                        <!-- Menu navigasi situs -->
+                        <ul class="navbar-nav mb-2 mb-md-0">
                         </ul>
                     </div>
                 </div>
@@ -38,10 +54,10 @@ $this->headMeta()->appendName('author', 'Ade M Saragih');
         <main class="flex-shrink-0 mt-5 pt-4">
 <?= $this->content ?>
         </main>
-        <footer class="footer mt-auto py-3 bg-dark">
-            <div class="container d-flex flex-column gap-1 text-light text-opacity-75">
-                <span>&copy; 2000-<?= date('Y') ?> Ade M Saragih (<a href="https://www.adems.id/" class="link-light fw-bold text-decoration-none">AdeMS</a>).</span>
-                <span class="small"><a href="https://github.com/AdeMS/dapur" class="link-light text-decoration-none">Dapur AdeMS</a> adalah bagian dari <a href="https://www.adems.id/" class="link-light text-decoration-none">Tempat AdeMS</a>, tempat Ade M Saragih untuk bermain dan belajar.</span>
+        <footer class="footer mt-auto py-3 dapur-bingkai">
+            <div class="container d-flex flex-column gap-1 text-body-secondary">
+                <span>&copy; 2000-<?= date('Y') ?> Ade M Saragih (<a href="https://www.adems.id/" class="link-body-emphasis fw-bold text-decoration-none">AdeMS</a>).</span>
+                <span class="small"><a href="https://github.com/AdeMS/dapur" class="link-body-emphasis text-decoration-none">Dapur AdeMS</a> adalah bagian dari <a href="https://www.adems.id/" class="link-body-emphasis text-decoration-none">Tempat AdeMS</a>, tempat Ade M Saragih untuk bermain dan belajar.</span>
             </div>
         </footer>
         <script src="/asset/bootstrap/js/bootstrap.bundle.min.js"></script>

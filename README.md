@@ -75,10 +75,10 @@ menambahkan halaman Anda sendiri.
 ### Memakai Apache dan HTTPS
 
 File `public/.htaccess` mengalihkan semua permintaan `http://` ke `https://`. Di server yang
-sudah memiliki sertifikat SSL, ini membuat situs Anda selalu diakses dengan aman.
+sudah memiliki sertifikat SSL, ini membuat website Anda selalu diakses dengan aman.
 
 Jika Anda memakai Apache **tanpa SSL**, misalnya di komputer sendiri (XAMPP, Laragon, dan
-sejenisnya), situs akan dialihkan ke `https://` lalu gagal dibuka. Untuk itu, nonaktifkan
+sejenisnya), website akan dialihkan ke `https://` lalu gagal dibuka. Untuk itu, nonaktifkan
 pengalihan dengan memberi tanda `#` pada dua baris berikut di `public/.htaccess`:
 
 ```apache
@@ -87,7 +87,7 @@ pengalihan dengan memberi tanda `#` pada dua baris berikut di `public/.htaccess`
 # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 ```
 
-Pengalihan ini memakai kode `301` (permanen), sehingga browser bisa mengingatnya. Jika situs
+Pengalihan ini memakai kode `301` (permanen), sehingga browser bisa mengingatnya. Jika website
 masih dialihkan setelah baris tersebut dinonaktifkan, hapus cache browser Anda.
 
 Server pengembangan `composer serve` tidak membaca `.htaccess`, sehingga tidak terpengaruh.
@@ -182,7 +182,7 @@ Ikon di ujung kanan navbar membuka pilihan tema:
 | **Gelap** | Selalu memakai tema gelap; gambar latar ikut digelapkan |
 | **Otomatis** | Mengikuti pengaturan terang/gelap di perangkat pengunjung (bawaan) |
 
-Pilihan pengunjung disimpan di browser (`localStorage`), sehingga tetap berlaku saat situs
+Pilihan pengunjung disimpan di browser (`localStorage`), sehingga tetap berlaku saat website
 dibuka kembali. Tema diterapkan oleh `public/asset/dapur/js/tema.js` sebelum halaman tampil,
 jadi tidak ada kedipan warna saat halaman dimuat.
 
@@ -193,7 +193,7 @@ seperti `text-dark` atau `bg-white`. Dengan begitu halaman Anda tetap terbaca di
 ### Menambahkan menu navigasi
 
 Tambahkan item menu di `module/App/templates/layout/default.phtml`, di dalam `<ul>` pada
-bagian bertanda `Menu navigasi situs`:
+bagian bertanda `Menu navigasi website`:
 
 ```html
 <ul class="navbar-nav mb-2 mb-md-0">
@@ -299,7 +299,7 @@ Data cache disimpan di `data/cache/app/` dengan masa berlaku bawaan 1 jam.
 ### Izin folder cache
 
 Web server (misalnya Apache) harus bisa menulis ke `data/cache/` dan `data/cache/app/`.
-Jika tidak bisa, situs tetap berjalan, tetapi **cache konfigurasi tidak akan dibuat tanpa
+Jika tidak bisa, website tetap berjalan, tetapi **cache konfigurasi tidak akan dibuat tanpa
 pesan error apa pun**, dan cache data aplikasi akan gagal saat dipakai.
 
 Cari tahu dulu user yang menjalankan web server Anda, misalnya `www-data` (Debian/Ubuntu)
@@ -324,7 +324,7 @@ Arti angka `2770`:
 Angka `0` terakhir penting jika Anda memakai [database](#database): cache konfigurasi
 `data/cache/config-cache.php` ikut menyimpan password database, dan file tersebut dibuat dengan
 izin `644` (bisa dibaca semua user). Dengan folder `2770`, user lain tetap tidak bisa membukanya.
-Jika situs Anda tidak memakai database, `2775` juga boleh dipakai.
+Jika website Anda tidak memakai database, `2775` juga boleh dipakai.
 
 Perintah `chown` biasanya perlu dijalankan sebagai root. Hal yang sama berlaku untuk folder
 `data/database/` jika Anda memakai SQLite.
@@ -338,7 +338,7 @@ chmod 777 data/cache data/cache/app
 > **Perhatian:** dengan izin `777`, semua user di server bisa membaca dan menulis ke folder
 > tersebut, termasuk membaca password database di cache konfigurasi. Di server bersama
 > (shared hosting), user lain juga bisa menaruh file PHP palsu sebagai cache konfigurasi yang
-> kemudian dijalankan oleh situs Anda. Jangan gunakan cara ini di server bersama.
+> kemudian dijalankan oleh website Anda. Jangan gunakan cara ini di server bersama.
 
 Pada cara 2, file dan subfolder cache data aplikasi tetap dibuat oleh web server dengan izin
 bawaan `0700`/`0600`, sehingga Anda tidak bisa menghapusnya dari akun Anda sendiri. Jika Anda
@@ -355,7 +355,7 @@ Di Windows, pengaturan ini umumnya tidak diperlukan.
 ## Database
 
 Dapur AdeMS memakai [laminas-db](https://docs.laminas.dev/laminas-db/) untuk koneksi ke
-MySQL/MariaDB, PostgreSQL, atau SQLite. Secara bawaan koneksi database belum diatur, dan situs
+MySQL/MariaDB, PostgreSQL, atau SQLite. Secara bawaan koneksi database belum diatur, dan website
 tetap berjalan tanpa database. Koneksi baru dibuka saat ada handler yang memakainya.
 
 Yang sudah disediakan:

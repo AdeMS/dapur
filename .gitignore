@@ -7,3 +7,8 @@ composer.lock
 
 # Daftar modul tambahan per instalasi
 /config/modul.local.php
+
+# Multi-website: daftar website dan folder website terpusat (per instalasi)
+/config/multiwebsite.local.php
+/config/website/
+/data/website/

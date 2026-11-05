@@ -23,7 +23,8 @@ menambahkan halaman Anda sendiri.
 - PHP 8.2, 8.3, 8.4, atau 8.5
 - [Composer](https://getcomposer.org/download/)
 - Web server dengan document root diarahkan ke folder `public/`
-  (Apache dengan `mod_rewrite`, atau PHP built-in server untuk pengembangan)
+  (Apache dengan `mod_rewrite`, atau PHP built-in server untuk pengembangan;
+  lihat [Memakai Apache dan HTTPS](#memakai-apache-dan-https))
 - Folder `data/cache/` harus bisa ditulis oleh web server
   (lihat [Izin folder cache](#izin-folder-cache))
 - Jika memakai database: ekstensi PHP `pdo_mysql`, `pdo_pgsql`, atau `pdo_sqlite`
@@ -70,41 +71,72 @@ menambahkan halaman Anda sendiri.
    Lalu buka <http://localhost:8080/>. Jika berhasil, Anda akan melihat halaman
    **Selamat Datang di Dapur AdeMS**.
 
+### Memakai Apache dan HTTPS
+
+File `public/.htaccess` mengalihkan semua permintaan `http://` ke `https://`. Di server yang
+sudah memiliki sertifikat SSL, ini membuat situs Anda selalu diakses dengan aman.
+
+Jika Anda memakai Apache **tanpa SSL**, misalnya di komputer sendiri (XAMPP, Laragon, dan
+sejenisnya), situs akan dialihkan ke `https://` lalu gagal dibuka. Untuk itu, nonaktifkan
+pengalihan dengan memberi tanda `#` pada dua baris berikut di `public/.htaccess`:
+
+```apache
+# Mengalihkan permintaan http ke https
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+```
+
+Pengalihan ini memakai kode `301` (permanen), sehingga browser bisa mengingatnya. Jika situs
+masih dialihkan setelah baris tersebut dinonaktifkan, hapus cache browser Anda.
+
+Server pengembangan `composer serve` tidak membaca `.htaccess`, sehingga tidak terpengaruh.
+
 ## Struktur Folder
 
 ```
 dapur/
 ├── bin/
-│   ├── cek-database.php       ← menguji koneksi database
-│   └── clear-config-cache.php ← menghapus cache konfigurasi
+│   ├── cek-database.php             ← menguji koneksi database
+│   └── clear-config-cache.php       ← menghapus cache konfigurasi
 ├── config/
 │   ├── autoload/
-│   │   ├── cache.global.php   ← pengaturan cache
-│   │   └── database.local.php.dist ← contoh pengaturan database
-│   ├── config.php          ← daftar ConfigProvider yang digabungkan
-│   ├── container.php       ← membuat service container
-│   ├── pipeline.php        ← urutan middleware
-│   └── routes.php          ← daftar route aplikasi
+│   │   ├── cache.global.php         ← pengaturan cache
+│   │   └── database.local.php.dist  ← contoh pengaturan database
+│   ├── config.php                   ← daftar ConfigProvider yang digabungkan
+│   ├── container.php                ← membuat service container
+│   ├── pipeline.php                 ← urutan middleware
+│   └── routes.php                   ← daftar route aplikasi
 ├── data/
-│   ├── cache/              ← file cache (isinya tidak masuk Git)
-│   │   ├── config-cache.php   ← cache konfigurasi
-│   │   └── app/            ← cache data aplikasi
-│   └── database/           ← file database SQLite (isinya tidak masuk Git)
+│   ├── cache/                       ← file cache (isinya tidak masuk Git)
+│   │   ├── app/                     ← cache data aplikasi
+│   │   └── config-cache.php         ← cache konfigurasi
+│   └── database/                    ← file database SQLite (isinya tidak masuk Git)
 ├── module/
-│   └── App/                ← modul bawaan Dapur AdeMS
+│   └── App/                         ← modul bawaan Dapur AdeMS
 │       ├── src/
-│       │   ├── Cache/      ← factory cache PSR-6 dan PSR-16
-│       │   ├── Db/         ← factory koneksi database
-│       │   ├── ConfigProvider.php
-│       │   └── Middleware/ ← DefaultHomeMiddleware (halaman bawaan)
+│       │   ├── Cache/               ← factory cache PSR-6 dan PSR-16
+│       │   ├── Db/                  ← factory koneksi database
+│       │   ├── Middleware/          ← DefaultHomeMiddleware (halaman bawaan)
+│       │   └── ConfigProvider.php
 │       └── templates/
-│           ├── dapur/      ← template halaman bawaan
-│           ├── error/      ← template halaman error (404 dan lainnya)
-│           └── layout/     ← layout::default
-└── public/                 ← document root web server
-    ├── index.php
-    └── asset/
+│           ├── dapur/               ← template halaman bawaan
+│           ├── error/               ← template halaman error (404 dan lainnya)
+│           └── layout/              ← layout::default
+└── public/                          ← document root web server
+    ├── .htaccess                    ← aturan Apache (rewrite dan pengalihan ke HTTPS)
+    ├── asset/                       ← aset CSS, gambar, dan Bootstrap
+    └── index.php                    ← pintu masuk aplikasi
 ```
+
+## Perintah Composer
+
+| Perintah | Kegunaan |
+|---|---|
+| `composer serve` | Menjalankan server pengembangan di <http://localhost:8080/> |
+| `composer clear-config-cache` | Menghapus cache konfigurasi; jalankan setiap kali konfigurasi diubah |
+| `composer cek-database` | Menguji koneksi database |
+| `composer setup-bootstrap` | Menyalin ulang aset Bootstrap ke `public/asset/bootstrap` |
+| `composer setup-bootstrap-icons` | Menyalin ulang Bootstrap Icons ke `public/asset/bootstrap/font` |
 
 ## Membuat Halaman Home
 

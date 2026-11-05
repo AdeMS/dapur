@@ -1,6 +1,9 @@
 /vendor
 composer.lock
 
+# Paket Composer tambahan per instalasi (digabung oleh composer-merge-plugin)
+/composer.local.json
+
 # Konfigurasi lokal (berisi password database, dll.)
 /config/autoload/local.php
 /config/autoload/*.local.php

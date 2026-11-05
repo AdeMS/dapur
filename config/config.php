@@ -9,8 +9,13 @@ use Laminas\ConfigAggregator\PhpFileProvider;
 // Lokasi file cache konfigurasi.
 // Cache hanya dibuat jika 'config_cache_enabled' bernilai true (lihat config/autoload/cache.global.php).
 // Hapus file ini dengan `composer clear-config-cache` setiap kali konfigurasi diubah.
+// Bawaan: data/cache/config-cache.php. Lokasi ini bisa diganti dengan mendefinisikan konstanta
+// DAPUR_CONFIG_CACHE_PATH sebelum file ini dimuat (dipakai oleh fitur multi-website agar setiap
+// website memiliki cache konfigurasi sendiri).
 $cacheConfig = [
-    'config_cache_path' => dirname(__DIR__) . '/data/cache/config-cache.php',
+    'config_cache_path' => defined('DAPUR_CONFIG_CACHE_PATH')
+        ? (string) DAPUR_CONFIG_CACHE_PATH
+        : dirname(__DIR__) . '/data/cache/config-cache.php',
 ];
 
 // Memuat konfigurasi dari berbagai penyedia konfigurasi

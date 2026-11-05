@@ -13,12 +13,13 @@ chdir(dirname(__DIR__));
 
 require 'vendor/autoload.php';
 
-$config = include 'config/config.php';
-
-if (! isset($config['config_cache_path'])) {
-    echo "Lokasi cache konfigurasi tidak ditemukan; tidak ada yang dihapus." . PHP_EOL;
-    exit(0);
-}
+// Lokasi cache dihitung dengan aturan yang sama seperti config/config.php, tanpa memuat
+// konfigurasi (memuat konfigurasi justru membuat ulang cache yang hendak dihapus).
+$config = [
+    'config_cache_path' => defined('DAPUR_CONFIG_CACHE_PATH')
+        ? (string) DAPUR_CONFIG_CACHE_PATH
+        : dirname(__DIR__) . '/data/cache/config-cache.php',
+];
 
 if (! file_exists($config['config_cache_path'])) {
     printf("File cache konfigurasi '%s' tidak ada; tidak ada yang dihapus.%s", $config['config_cache_path'], PHP_EOL);

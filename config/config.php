@@ -18,6 +18,11 @@ $cacheConfig = [
         : dirname(__DIR__) . '/data/cache/config-cache.php',
 ];
 
+// Modul tambahan yang aktif di inti (opsional, diabaikan Git).
+// Isinya daftar nama ConfigProvider modul, misalnya:
+//     return [AdeMS\Dapur\MultiWebsite\ConfigProvider::class];
+$modulInti = is_file(__DIR__ . '/modul.local.php') ? require __DIR__ . '/modul.local.php' : [];
+
 // Memuat konfigurasi dari berbagai penyedia konfigurasi
 $aggregator = new ConfigAggregator([
     \Laminas\Serializer\ConfigProvider::class,
@@ -39,9 +44,17 @@ $aggregator = new ConfigAggregator([
     // Default App module config
     App\ConfigProvider::class,
 
+    // Modul tambahan inti dari config/modul.local.php: dimuat sebelum config/autoload,
+    // agar pengaturan modul tetap bisa ditimpa lewat config/autoload/*.php
+    ...(is_array($modulInti) ? $modulInti : []),
+
     // Memuat konfigurasi tambahan dari config/autoload/:
     // `global.php`, `*.global.php`, `local.php`, dan `*.local.php`
     new PhpFileProvider(realpath(__DIR__) . '/autoload/{{,*.}global,{,*.}local}.php'),
+
+    // Lapisan website: diisi paket multi-website lewat konstanta DAPUR_CONFIG_PROVIDERS
+    // sebelum file ini dimuat. Paling akhir, agar konfigurasi website menimpa semua bawaan inti.
+    ...(defined('DAPUR_CONFIG_PROVIDERS') && is_array(DAPUR_CONFIG_PROVIDERS) ? DAPUR_CONFIG_PROVIDERS : []),
 ], $cacheConfig['config_cache_path']);
 
 // Mengembalikan konfigurasi yang telah digabungkan

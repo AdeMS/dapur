@@ -22,7 +22,8 @@
     ],
     "config": {
         "allow-plugins": {
-            "laminas/laminas-component-installer": true
+            "laminas/laminas-component-installer": true,
+            "wikimedia/composer-merge-plugin": true
         }
     },
     "extra": {
@@ -30,6 +31,14 @@
             "component-ignore-list": [
                 "laminas/laminas-db"
             ]
+        },
+        "merge-plugin": {
+            "include": [
+                "composer.local.json"
+            ],
+            "recurse": false,
+            "merge-extra": false,
+            "merge-scripts": false
         }
     },
     "require": {
@@ -46,7 +55,8 @@
         "laminas/laminas-cache": "^4.3",
         "laminas/laminas-cache-storage-adapter-filesystem": "^3.2",
         "laminas/laminas-serializer": "^4.0",
-        "laminas/laminas-db": "^2.22"
+        "laminas/laminas-db": "^2.22",
+        "wikimedia/composer-merge-plugin": "^2.1"
     },
     "autoload": {
         "psr-4": {

@@ -38,9 +38,10 @@ $this->headMeta()->appendName('author', 'Ade M Saragih');
         <main class="flex-shrink-0 mt-5 pt-4">
 <?= $this->content ?>
         </main>
-        <footer class="footer mt-auto py-3 bg-body-tertiary">
-            <div class="container">
-                <span class="text-body-secondary">&copy; <?= date('Y') ?> <a href="https://www.adems.id/" class="fw-bold text-decoration-none">Tempat AdeMS</a>, untuk bermain dan belajar.</span>
+        <footer class="footer mt-auto py-3 bg-dark">
+            <div class="container d-flex flex-column gap-1 text-light text-opacity-75">
+                <span>&copy; 2000-<?= date('Y') ?> Ade M Saragih (<a href="https://www.adems.id/" class="link-light fw-bold text-decoration-none">AdeMS</a>).</span>
+                <span class="small"><a href="https://github.com/AdeMS/dapur" class="link-light text-decoration-none">Dapur AdeMS</a> adalah bagian dari <a href="https://www.adems.id/" class="link-light text-decoration-none">Tempat AdeMS</a>, tempat Ade M Saragih untuk bermain dan belajar.</span>
             </div>
         </footer>
         <script src="/asset/bootstrap/js/bootstrap.bundle.min.js"></script>

@@ -105,6 +105,7 @@ dapur/
 │   │   └── database.local.php.dist  ← contoh pengaturan database
 │   ├── config.php                   ← daftar ConfigProvider yang digabungkan
 │   ├── container.php                ← membuat service container
+│   ├── modul.local.php              ← daftar modul tambahan (opsional, tidak masuk Git)
 │   ├── pipeline.php                 ← urutan middleware
 │   └── routes.php                   ← daftar route aplikasi
 ├── data/
@@ -224,6 +225,26 @@ membuat tema warna sendiri, salin semua aturan di `style.css` yang diawali `[dat
 (termasuk warna accordion, menu dropdown, dan badge) dengan nama lain, misalnya
 `[data-tema=laut]`. Ubah warnanya, lalu ganti atribut di layout menjadi `data-tema="laut"`.
 
+## Modul Tambahan
+
+Modul tambahan (misalnya paket Composer `adems/dapur-*`) diaktifkan dengan mencantumkan
+ConfigProvider-nya di file `config/modul.local.php`. Buat file ini bila belum ada:
+
+```php
+<?php
+
+// Modul tambahan yang aktif di inti Dapur AdeMS, satu ConfigProvider per baris.
+return [
+    NamaModul\ConfigProvider::class,
+];
+```
+
+Modul dari file ini dimuat setelah modul bawaan `App` dan sebelum `config/autoload/`, sehingga
+pengaturan modul tetap bisa ditimpa lewat `config/autoload/*.php`. File ini tidak masuk Git,
+jadi daftar modul bisa berbeda di setiap instalasi tanpa mengubah `config/config.php`.
+
+Setelah mengubah daftar modul, jalankan `composer clear-config-cache`.
+
 ## Cache
 
 Dapur AdeMS memakai [laminas-cache](https://docs.laminas.dev/laminas-cache/) dengan adapter
@@ -236,7 +257,7 @@ digabungkan sekali, lalu disimpan ke `data/cache/config-cache.php`. Request beri
 memakai file tersebut sehingga lebih cepat.
 
 > **Penting:** selama file cache ada, perubahan konfigurasi tidak akan terlihat. Setiap kali
-> Anda mengubah konfigurasi, misalnya menambahkan modul di `config/config.php` atau mengubah
+> Anda mengubah konfigurasi, misalnya menambahkan modul di `config/modul.local.php` atau mengubah
 > ConfigProvider, hapus cache konfigurasi:
 >
 > ```bash

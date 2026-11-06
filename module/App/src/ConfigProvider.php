@@ -11,6 +11,19 @@ final class ConfigProvider
         return [
             'dependencies' => $this->getDependencies(),
             'templates'    => $this->getTemplates(),
+            'view_helpers' => $this->getViewHelpers(),
+        ];
+    }
+
+    public function getViewHelpers(): array
+    {
+        return [
+            'aliases'   => [
+                'infoWebsite' => View\Helper\InfoWebsite::class,
+            ],
+            'factories' => [
+                View\Helper\InfoWebsite::class => View\Helper\InfoWebsiteFactory::class,
+            ],
         ];
     }
 

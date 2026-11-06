@@ -193,10 +193,10 @@ KODE,
 <div class="container pb-5">
     <div class="jumbotron">
         <span class="badge text-bg-success mb-3"><i class="bi bi-check-circle-fill"></i> Instalasi berhasil</span>
-        <h1 class="display-5 fw-bold">Selamat Datang di Dapur AdeMS</h1>
+        <h1 class="display-5 fw-bold">Selamat Datang di <?= $this->escapeHtml($this->infoWebsite()->judul()) ?></h1>
         <p class="lead mb-4">
             <a href="https://github.com/AdeMS/dapur" target="_blank">Dapur AdeMS</a>
-            sudah terpasang dan berjalan dengan baik.
+            sudah terpasang dan berjalan dengan baik di <strong><?= $this->escapeHtml($this->infoWebsite()->host() ?? ($hostRequest ?? '')) ?></strong>.
         </p>
         <div class="alert alert-warning d-flex align-items-start mb-0" role="alert">
             <i class="bi bi-info-circle-fill fs-4 me-3"></i>

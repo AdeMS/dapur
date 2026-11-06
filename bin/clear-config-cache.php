@@ -21,6 +21,13 @@ $config = [
         : dirname(__DIR__) . '/data/cache/config-cache.php',
 ];
 
+// File di dalam folder yang tidak bisa dibaca terlihat seperti tidak ada.
+$folderCache = dirname($config['config_cache_path']);
+if (is_dir($folderCache) && (! is_readable($folderCache) || ! is_executable($folderCache))) {
+    printf("Folder cache '%s' tidak bisa dibaca akun ini; jalankan dengan akun yang berhak.%s", $folderCache, PHP_EOL);
+    exit(1);
+}
+
 if (! file_exists($config['config_cache_path'])) {
     printf("File cache konfigurasi '%s' tidak ada; tidak ada yang dihapus.%s", $config['config_cache_path'], PHP_EOL);
     exit(0);

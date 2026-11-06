@@ -1,9 +1,9 @@
 <?php
-$this->headTitle('Dapur AdeMS')->setSeparator(' - ');
+$this->headTitle($this->infoWebsite()->judul())->setSeparator(' - ');
 $this->headMeta()->appendName('author', 'Ade M Saragih');
 ?>
 <!DOCTYPE html>
-<html lang="id" class="h-100" data-tema="dapur" data-bs-theme="light">
+<html lang="id" class="h-100" data-tema="<?= $this->escapeHtmlAttr($this->infoWebsite()->tema()) ?>" data-bs-theme="light">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />

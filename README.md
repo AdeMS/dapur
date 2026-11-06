@@ -140,7 +140,7 @@ dapur/
 | Perintah | Kegunaan |
 |---|---|
 | `composer serve` | Menjalankan server pengembangan di <http://localhost:8080/> |
-| `composer clear-config-cache` | Menghapus cache konfigurasi; jalankan setiap kali konfigurasi diubah |
+| `composer clear-config-cache` | Menghapus cache konfigurasi; jalankan setiap kali konfigurasi diubah (otomatis saat `composer install` dan `composer update`) |
 | `composer cek-database` | Menguji koneksi database |
 | `composer setup-bootstrap` | Menyalin ulang aset Bootstrap ke `public/asset/bootstrap` |
 | `composer setup-bootstrap-icons` | Menyalin ulang Bootstrap Icons ke `public/asset/bootstrap/font` |

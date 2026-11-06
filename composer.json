@@ -66,11 +66,13 @@
     "scripts": {
         "post-install-cmd": [
             "@setup-bootstrap",
-            "@setup-bootstrap-icons"
+            "@setup-bootstrap-icons",
+            "@clear-config-cache"
         ],
         "post-update-cmd": [
             "@setup-bootstrap",
-            "@setup-bootstrap-icons"
+            "@setup-bootstrap-icons",
+            "@clear-config-cache"
         ],
         "clear-config-cache": "php bin/clear-config-cache.php",
         "cek-database": "php bin/cek-database.php",

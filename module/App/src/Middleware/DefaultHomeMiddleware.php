@@ -29,7 +29,8 @@ final class DefaultHomeMiddleware implements MiddlewareInterface
 
         // Merender template dapur::default-home di dalam layout::default
         return new HtmlResponse($this->template->render('dapur::default-home', [
-            'layout' => 'layout::default',
+            'layout'      => 'layout::default',
+            'hostRequest' => $request->getUri()->getHost(),
         ]));
     }
 }

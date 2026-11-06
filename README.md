@@ -225,6 +225,21 @@ membuat tema warna sendiri, salin semua aturan di `style.css` yang diawali `[dat
 (termasuk warna accordion, menu dropdown, dan badge) dengan nama lain, misalnya
 `[data-tema=laut]`. Ubah warnanya, lalu ganti atribut di layout menjadi `data-tema="laut"`.
 
+### Judul dan tema per website
+
+Layout dan halaman bawaan membaca judul serta tema lewat view helper `infoWebsite()`:
+
+```php
+$this->infoWebsite()->judul(); // judul website, bawaan "Dapur AdeMS"
+$this->infoWebsite()->host();  // nama domain website, null bila tidak ada
+$this->infoWebsite()->tema();  // nilai data-tema, bawaan "dapur"
+```
+
+Nilainya berasal dari `$config['website']`, yang diisi oleh paket
+[adems/dapur-multiwebsite](https://github.com/AdeMS/dapur-multiwebsite) dari `website.php`. Tanpa
+pengaturan tersebut, nilai bawaan yang dipakai. Nama tema harus sudah memiliki aturan warna di CSS
+(lihat [Mengubah warna tema](#mengubah-warna-tema)).
+
 ## Modul Tambahan
 
 ### Memasang paket tambahan

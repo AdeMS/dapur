@@ -74,6 +74,7 @@
             "@setup-bootstrap-icons",
             "@clear-config-cache"
         ],
+        "dapur": "php dapur",
         "clear-config-cache": "php bin/clear-config-cache.php",
         "cek-database": "php bin/cek-database.php",
         "serve": [

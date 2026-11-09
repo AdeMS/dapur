@@ -108,6 +108,7 @@ dapur/
 │   ├── modul.local.php              ← daftar modul tambahan (opsional, tidak masuk Git)
 │   ├── pipeline.php                 ← urutan middleware
 │   └── routes.php                   ← daftar route aplikasi
+├── dapur                            ← pintu masuk perintah: php dapur
 ├── data/
 │   ├── cache/                       ← file cache (isinya tidak masuk Git)
 │   │   ├── app/                     ← cache data aplikasi
@@ -133,6 +134,24 @@ dapur/
     │       ├── img/                 ← logo dan gambar latar
     │       └── js/tema.js           ← pemilih tema terang, gelap, dan otomatis
     └── index.php                    ← pintu masuk aplikasi
+```
+
+## Perintah Dapur
+
+```bash
+php dapur                     # daftar perintah
+php dapur clear-config-cache
+php dapur cek-database
+```
+
+Bila paket [adems/dapur-multiwebsite](https://github.com/AdeMS/dapur-multiwebsite) terpasang, perintah
+websitenya tersedia di sini juga, misalnya `php dapur buat-website contoh.com`.
+
+Perintah yang sama bisa dijalankan lewat Composer dengan `composer dapur ...`. Composer membuang opsi yang
+ditulis tanpa `--` tanpa memberi pesan, jadi perintah yang memakai opsi harus ditulis seperti ini:
+
+```bash
+composer dapur -- buat-website contoh.com --alias=www.contoh.com
 ```
 
 ## Perintah Composer

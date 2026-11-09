@@ -1,0 +1,76 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Pintu masuk perintah Dapur AdeMS. Jalankan dari folder inti:
+ *
+ *   php dapur                 menampilkan daftar perintah
+ *   php dapur cek-database
+ *
+ * Lewat Composer juga bisa, tetapi opsi hanya terbaca bila ditulis setelah `--`:
+ *
+ *   composer dapur -- cek-database --website=contoh.com
+ */
+
+declare(strict_types=1);
+
+chdir(__DIR__);
+
+if (! is_file('vendor/autoload.php')) {
+    fwrite(STDERR, 'Paket belum terpasang. Jalankan dulu: composer install' . PHP_EOL);
+    exit(1);
+}
+
+require 'vendor/autoload.php';
+
+$argumen  = array_values(array_slice($argv, 1));
+$perintah = $argumen[0] ?? '';
+
+// Perintah milik paket multi-website
+$kelasWebsite  = 'AdeMS\Dapur\MultiWebsite\Perintah';
+$perintahPaket  = in_array($perintah, ['buat-website', 'daftar-website'], true)
+    || ($perintah === 'clear-config-cache' && in_array('--semua', $argumen, true));
+
+if ($perintahPaket) {
+    if (! class_exists($kelasWebsite)) {
+        fwrite(STDERR, 'Perintah ini membutuhkan paket adems/dapur-multiwebsite 1.1 atau lebih baru.' . PHP_EOL);
+        exit(1);
+    }
+
+    exit((new $kelasWebsite(__DIR__))->jalankan($argumen));
+}
+
+switch ($perintah) {
+    case 'clear-config-cache':
+        require 'bin/clear-config-cache.php';
+        exit(0);
+
+    case 'cek-database':
+        require 'bin/cek-database.php';
+        exit(0);
+
+    case '':
+        $kode = 0;
+        break;
+
+    default:
+        fwrite(STDERR, sprintf("Perintah '%s' tidak dikenal.%s", $perintah, PHP_EOL));
+        $kode = 1;
+}
+
+echo <<<BANTUAN
+    Pemakaian: php dapur <perintah>
+
+      clear-config-cache             Menghapus cache konfigurasi
+      cek-database                   Menguji koneksi database
+
+    Dengan paket adems/dapur-multiwebsite:
+
+      buat-website <domain>          Membuat folder website dan mendaftarkannya
+      daftar-website                 Menampilkan semua website yang terdaftar
+      clear-config-cache --semua     Menghapus cache konfigurasi inti dan semua website
+      <perintah> --website=<domain>  Menjalankan perintah untuk website tertentu
+
+    BANTUAN;
+
+exit($kode);

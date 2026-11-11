@@ -226,6 +226,26 @@ Di layar lebar, menu sejajar dengan teks di dalam panel konten. Di HP, menu masu
 menu (hamburger). Tombol ini otomatis disembunyikan selama menu belum berisi item, dan muncul
 kembali begitu Anda menambahkan item pertama.
 
+Modul juga bisa menambahkan menu tanpa mengubah layout, lewat dua placeholder yang dirender
+layout:
+
+| Placeholder | Letak |
+|---|---|
+| `menu` | Setelah item menu navigasi; di HP ikut masuk ke tombol menu |
+| `menu-kanan` | Di sebelah kanan pemilih tema, selalu terlihat (juga di HP), misalnya untuk menu user |
+
+Isi keduanya dengan item `<li>` dari template modul:
+
+```php
+<?php $this->placeholder('menu')->captureStart() ?>
+    <li class="nav-item"><a class="nav-link" href="/laporan">Laporan</a></li>
+<?php $this->placeholder('menu')->captureEnd() ?>
+```
+
+Bila Anda memakai layout sendiri, tambahkan `<?= $this->placeholder()->toString('menu') ?>` dan
+`<?= $this->placeholder()->toString('menu-kanan') ?>` di tempat yang sama seperti layout bawaan
+agar menu modul (misalnya [adems/dapur-dashboard](https://github.com/AdeMS/dapur-dashboard)) tampil.
+
 ### Mengubah warna tema
 
 Warna tema Dapur diatur dengan variabel CSS di `public/asset/dapur/css/style.css`, pada

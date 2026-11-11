@@ -50,6 +50,36 @@
     --dapur-bingkai-bg: #00221c;
 }
 
+/**
+ * Isian yang diisi otomatis oleh browser (autofill).
+ * Browser memberi latar biru yang tidak bisa diganti lewat background-color,
+ * jadi latar ditutup bayangan dalam berwarna latar tema. Glow biru hanya
+ * muncul saat isian fokus, sama seperti isian biasa.
+ */
+.form-control:-webkit-autofill,
+.form-control:-webkit-autofill:hover {
+    -webkit-text-fill-color: var(--bs-body-color);
+    caret-color: var(--bs-body-color);
+    -webkit-box-shadow: inset 0 0 0 100rem var(--bs-body-bg);
+    box-shadow: inset 0 0 0 100rem var(--bs-body-bg);
+    transition: background-color 600000s 0s, color 600000s 0s;
+}
+.form-control:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--bs-body-color);
+    border-color: #86b7fe;
+    -webkit-box-shadow: inset 0 0 0 100rem var(--bs-body-bg), 0 0 0 .25rem rgba(13, 110, 253, .25);
+    box-shadow: inset 0 0 0 100rem var(--bs-body-bg), 0 0 0 .25rem rgba(13, 110, 253, .25);
+}
+/* Firefox: aturan terpisah agar selektor yang tidak dikenal browser lama tidak membatalkan aturan di atas */
+.form-control:autofill {
+    filter: none;
+    box-shadow: inset 0 0 0 100rem var(--bs-body-bg);
+}
+.form-control:autofill:focus {
+    border-color: #86b7fe;
+    box-shadow: inset 0 0 0 100rem var(--bs-body-bg), 0 0 0 .25rem rgba(13, 110, 253, .25);
+}
+
 /* Bingkai halaman: navbar dan footer mengikuti mode terang/gelap */
 .dapur-bingkai {
     background-color: var(--dapur-bingkai-bg);

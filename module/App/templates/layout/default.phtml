@@ -44,9 +44,16 @@ $this->headMeta()->appendName('author', 'Ade M Saragih');
                         <span class="toggler-icon bottom-bar"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarCollapse">
-                        <!-- Menu navigasi website -->
+                        <!-- Menu navigasi website; modul mengisinya lewat placeholder 'menu' dan 'menu-kanan' (berisi <li>) -->
                         <ul class="navbar-nav mb-2 mb-md-0">
+<?= $this->placeholder()->toString('menu') ?>
                         </ul>
+<?php $menuKanan = $this->placeholder()->toString('menu-kanan') ?>
+<?php if ($menuKanan !== '') : ?>
+                        <ul class="navbar-nav ms-md-auto mb-2 mb-md-0 align-items-md-center">
+<?= $menuKanan ?>
+                        </ul>
+<?php endif ?>
                     </div>
                 </div>
             </nav>

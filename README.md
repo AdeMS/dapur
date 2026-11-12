@@ -106,6 +106,7 @@ dapur/
 │   ├── config.php                   ← daftar ConfigProvider yang digabungkan
 │   ├── container.php                ← membuat service container
 │   ├── modul.local.php              ← daftar modul tambahan (opsional, tidak masuk Git)
+│   ├── multiwebsite.local.php       ← daftar website (hanya bila multi-website dipakai, tidak masuk Git)
 │   ├── pipeline.php                 ← urutan middleware
 │   └── routes.php                   ← daftar route aplikasi
 ├── dapur                            ← pintu masuk perintah: php dapur
@@ -135,6 +136,88 @@ dapur/
     │       └── js/tema.js           ← pemilih tema terang, gelap, dan otomatis
     └── index.php                    ← pintu masuk aplikasi
 ```
+
+## Cara Konfigurasi Disusun
+
+Bagian ini menjelaskan konsep konfigurasi Mezzio dan Laminas yang dipakai Dapur AdeMS. Memahaminya
+akan memudahkan Anda menambah modul, mengubah pengaturan, dan membaca dokumentasi Laminas.
+
+### ConfigProvider dan penggabungan konfigurasi
+
+Konfigurasi aplikasi Mezzio adalah **satu array PHP besar**. Array ini tidak ditulis di satu file,
+melainkan disusun dari banyak potongan oleh
+[laminas-config-aggregator](https://docs.laminas.dev/laminas-config-aggregator/) di
+`config/config.php`. Setiap potongan berasal dari:
+
+- **ConfigProvider**, yaitu kelas kecil milik sebuah modul atau paket. Saat dipanggil, kelas ini
+  mengembalikan array konfigurasi modul tersebut: daftar layanan (`dependencies`), lokasi template,
+  dan pengaturan bawaannya. Contohnya `module/App/src/ConfigProvider.php`.
+- **File PHP** di `config/autoload/` yang masing-masing mengembalikan array.
+
+Potongan-potongan itu digabung berurutan. Bila dua potongan memakai kunci yang sama, **potongan yang
+belakangan menang**. Array di dalamnya digabung per kunci, jadi Anda cukup menulis kunci yang ingin
+diubah, tidak perlu menyalin seluruh pengaturan.
+
+Urutan di Dapur AdeMS:
+
+1. ConfigProvider paket Laminas dan Mezzio (view, router, cache, dan lainnya)
+2. `App\ConfigProvider`, modul bawaan Dapur AdeMS
+3. ConfigProvider modul tambahan dari `config/modul.local.php`
+4. `config/autoload/*.global.php`, lalu `config/autoload/*.local.php`
+5. Lapisan website dari paket multi-website, bila dipakai
+
+Karena `config/autoload/` dibaca setelah modul, di sanalah tempat yang tepat untuk mengubah pengaturan
+bawaan modul tanpa menyentuh kode modul itu.
+
+Hasil penggabungan disimpan di cache (lihat [Cache konfigurasi](#cache-konfigurasi)). Itulah sebabnya
+setiap perubahan konfigurasi baru berlaku setelah `composer clear-config-cache`.
+
+### Arti `.global.php`, `.local.php`, dan `.dist`
+
+Penamaan file di `config/autoload/` mengikuti kebiasaan Laminas:
+
+| Akhiran | Isi | Masuk Git? |
+|---|---|---|
+| `*.global.php` | Pengaturan yang sama di semua instalasi, misalnya `cache.global.php` | Ya |
+| `*.local.php` | Pengaturan khusus satu instalasi: password database, alamat server, atau pengaturan pengembangan | Tidak |
+| `*.local.php.dist` | Contoh isi file `.local.php`. Salin, hapus akhiran `.dist`, lalu isi | Ya |
+
+File `.local.php` dibaca setelah `.global.php`, sehingga pengaturan lokal selalu menang. Dengan cara
+ini rahasia seperti password tidak pernah ikut ter-commit, dan satu repo bisa dipasang di laptop,
+server uji, dan server live dengan pengaturan masing-masing.
+
+### File di `config/` yang bukan bagian dari array konfigurasi
+
+Beberapa file sengaja berada langsung di `config/`, **bukan** di `config/autoload/`. Isinya tidak ikut
+digabung ke array konfigurasi. File-file itu mengatur cara aplikasi dirakit:
+
+| File | Kegunaan | Kapan dibaca |
+|---|---|---|
+| `config.php` | Menentukan potongan konfigurasi mana yang digabung dan urutannya | Saat konfigurasi disusun |
+| `container.php` | Membuat service container dari konfigurasi | Setelah konfigurasi jadi |
+| `pipeline.php` | Urutan middleware yang dilalui setiap request | Saat aplikasi dijalankan |
+| `routes.php` | Daftar alamat (route) dan handler-nya | Saat aplikasi dijalankan |
+| `modul.local.php` | Daftar ConfigProvider modul tambahan | **Sebelum** penggabungan |
+| `multiwebsite.local.php` | Daftar website (paket multi-website) | **Sebelum** penggabungan, bahkan sebelum `config.php` |
+
+`modul.local.php` dan `multiwebsite.local.php` tidak boleh dipindah ke `config/autoload/`, karena
+isinya diperlukan **sebelum** penggabungan dimulai:
+
+- `modul.local.php` menentukan modul mana yang ikut digabung. File di `config/autoload/` baru dibaca
+  di tengah penggabungan, jadi sudah terlambat untuk menambah modul. Isinya, yaitu daftar nama kelas,
+  juga akan ikut tercampur ke array konfigurasi.
+- `multiwebsite.local.php` dipakai untuk mengenali website dari nama host. Dari situ ditentukan lokasi
+  cache konfigurasi website dan konfigurasi website mana yang dimuat. Bila file ini ada di dalam
+  konfigurasi, daftar website baru bisa dibaca setelah cache konfigurasi dibaca, padahal cache mana
+  yang harus dibaca bergantung pada daftar itu.
+
+Keduanya tetap memakai akhiran `.local.php` karena artinya sama: khusus satu instalasi dan tidak masuk
+Git. Pola ini juga ada di kerangka aplikasi Laminas, misalnya `config/modules.config.php` dan
+`config/development.config.php` yang berada di `config/`, bukan di `config/autoload/`.
+
+Dokumentasi lebih lanjut:
+[Mezzio: konfigurasi](https://docs.mezzio.dev/mezzio/v3/features/container/config/) dan
+[laminas-config-aggregator](https://docs.laminas.dev/laminas-config-aggregator/).
 
 ## Perintah Dapur
 

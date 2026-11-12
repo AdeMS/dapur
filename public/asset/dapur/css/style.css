@@ -120,9 +120,22 @@ body {
     background-size: cover;
 }
 
-/* Pilihan aktif di menu dropdown (misalnya pemilih tema) memakai hijau tema */
+/* Pilihan aktif di menu dropdown (misalnya pemilih tema) memakai hijau tema. Tepi menu diberi cahaya tipis
+   hijau muda (#6fcf97) yang sama di mode terang dan gelap. */
 [data-tema=dapur] .dropdown-menu {
     --bs-dropdown-link-active-bg: #0a5700;
+    --bs-dropdown-border-color: rgba(111, 207, 151, .35);
+    box-shadow: 0 0 .5rem rgba(111, 207, 151, .3);
+    /* Item yang disorot (hover atau fokus): mode gelap sedikit lebih terang dengan sentuhan hijau */
+    --bs-dropdown-link-hover-bg: rgba(111, 207, 151, .15);
+}
+/* Di latar terang hijau muda tampak pucat, jadi cahayanya dibuat lebih kuat. Item yang disorot memakai
+   latar hijau muda tema dengan teks hijau tua, bukan abu-abu bawaan Bootstrap. */
+[data-tema=dapur][data-bs-theme=light] .dropdown-menu {
+    --bs-dropdown-border-color: rgba(111, 207, 151, .6);
+    box-shadow: 0 0 .6rem rgba(111, 207, 151, .55);
+    --bs-dropdown-link-hover-bg: #e3f1e6;
+    --bs-dropdown-link-hover-color: #0a5700;
 }
 
 /* Accordion yang terbuka memakai hijau tema, bukan biru bawaan Bootstrap */

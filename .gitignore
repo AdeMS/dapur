@@ -15,3 +15,9 @@ composer.lock
 /config/multiwebsite.local.php
 /config/website/
 /data/website/
+
+# Log error (folder dibuat web server dengan izin 2770 saat kesalahan pertama terjadi)
+/data/log/
+
+# Mode development (dibuat oleh `composer development-enable`)
+/config/development.config.php

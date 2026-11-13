@@ -6,6 +6,7 @@
  *
  *   php dapur                 menampilkan daftar perintah
  *   php dapur cek-database
+ *   php dapur log-error [<kode>]
  *
  * Lewat Composer juga bisa, tetapi opsi hanya terbaca bila ditulis setelah `--`:
  *
@@ -49,6 +50,10 @@ switch ($perintah) {
         require 'bin/cek-database.php';
         exit(0);
 
+    case 'log-error':
+        require 'bin/log-error.php';
+        exit(0);
+
     case '':
         $kode = 0;
         break;
@@ -63,12 +68,16 @@ echo <<<BANTUAN
 
       clear-config-cache             Menghapus cache konfigurasi
       cek-database                   Menguji koneksi database
+      log-error [<kode>] [--jumlah=10]
+                                     Menampilkan kesalahan terakhir dari log error, atau satu
+                                     kesalahan lengkap menurut kode di halaman error
 
     Dengan paket adems/dapur-multiwebsite:
 
       buat-website <domain>          Membuat folder website dan mendaftarkannya
       daftar-website                 Menampilkan semua website yang terdaftar
       clear-config-cache --semua     Menghapus cache konfigurasi inti dan semua website
+      log-error --semua [<kode>]     Kesalahan terakhir dari inti dan semua website, atau mencari kode
       <perintah> --website=<domain>  Menjalankan perintah untuk website tertentu
 
     BANTUAN;

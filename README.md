@@ -15,7 +15,9 @@ menambahkan halaman Anda sendiri.
 - **Tema terang, gelap, dan otomatis** yang bisa dipilih pengunjung dari navbar.
 - **Halaman bawaan** yang tampil selama halaman home belum dibuat, lengkap dengan
   langkah-langkah membuat modul halaman home.
-- **Halaman error** untuk 404 (halaman tidak ditemukan) dan kesalahan lainnya.
+- **Halaman error** untuk 404 (halaman tidak ditemukan) dan kesalahan lainnya, dengan kode kesalahan
+  yang bisa dicari di **log error**.
+- **Mode development** dengan halaman error lengkap (Whoops), untuk komputer sendiri.
 - **Cache** dengan laminas-cache: cache konfigurasi dan cache data aplikasi (PSR-6 dan PSR-16).
 - **Koneksi database** dengan laminas-db: MySQL/MariaDB, PostgreSQL, atau SQLite.
 
@@ -98,13 +100,15 @@ Server pengembangan `composer serve` tidak membaca `.htaccess`, sehingga tidak t
 dapur/
 ├── bin/
 │   ├── cek-database.php             ← menguji koneksi database
-│   └── clear-config-cache.php       ← menghapus cache konfigurasi
+│   ├── clear-config-cache.php       ← menghapus cache konfigurasi
+│   └── log-error.php                ← menampilkan log error
 ├── config/
 │   ├── autoload/
 │   │   ├── cache.global.php         ← pengaturan cache
 │   │   └── database.local.php.dist  ← contoh pengaturan database
 │   ├── config.php                   ← daftar ConfigProvider yang digabungkan
 │   ├── container.php                ← membuat service container
+│   ├── development.config.php.dist  ← pengaturan mode development
 │   ├── modul.local.php              ← daftar modul tambahan (opsional, tidak masuk Git)
 │   ├── multiwebsite.local.php       ← daftar website (hanya bila multi-website dipakai, tidak masuk Git)
 │   ├── pipeline.php                 ← urutan middleware
@@ -114,12 +118,14 @@ dapur/
 │   ├── cache/                       ← file cache (isinya tidak masuk Git)
 │   │   ├── app/                     ← cache data aplikasi
 │   │   └── config-cache.php         ← cache konfigurasi
-│   └── database/                    ← file database SQLite (isinya tidak masuk Git)
+│   ├── database/                    ← file database SQLite (isinya tidak masuk Git)
+│   └── log/error.log                ← log error (dibuat otomatis, tidak masuk Git)
 ├── module/
 │   └── App/                         ← modul bawaan Dapur AdeMS
 │       ├── src/
 │       │   ├── Cache/               ← factory cache PSR-6 dan PSR-16
 │       │   ├── Db/                  ← factory koneksi database
+│       │   ├── Error/               ← log error dan kode kesalahan
 │       │   ├── Middleware/          ← DefaultHomeMiddleware (halaman bawaan)
 │       │   └── ConfigProvider.php
 │       └── templates/
@@ -225,6 +231,7 @@ Dokumentasi lebih lanjut:
 php dapur                     # daftar perintah
 php dapur clear-config-cache
 php dapur cek-database
+php dapur log-error           # kesalahan terakhir; lihat bagian Log Error
 ```
 
 Bila paket [adems/dapur-multiwebsite](https://github.com/AdeMS/dapur-multiwebsite) terpasang, perintah
@@ -244,6 +251,9 @@ composer dapur -- buat-website contoh.com --alias=www.contoh.com
 | `composer serve` | Menjalankan server pengembangan di <http://localhost:8080/> |
 | `composer clear-config-cache` | Menghapus cache konfigurasi; jalankan setiap kali konfigurasi diubah (otomatis saat `composer install` dan `composer update`) |
 | `composer cek-database` | Menguji koneksi database |
+| `composer development-enable` | Menyalakan mode development (lihat bagian Mode Development) |
+| `composer development-disable` | Mematikan mode development |
+| `composer development-status` | Menampilkan apakah mode development sedang aktif |
 | `composer setup-bootstrap` | Menyalin ulang aset Bootstrap ke `public/asset/bootstrap` |
 | `composer setup-bootstrap-icons` | Menyalin ulang Bootstrap Icons ke `public/asset/bootstrap/font` |
 
@@ -458,17 +468,8 @@ memakai file tersebut sehingga lebih cepat.
 Perubahan pada `config/routes.php`, `config/pipeline.php`, dan template tidak di-cache,
 sehingga langsung berlaku.
 
-Untuk mematikan cache konfigurasi selama pengembangan, buat file `config/autoload/local.php`:
-
-```php
-<?php
-
-return [
-    Laminas\ConfigAggregator\ConfigAggregator::ENABLE_CACHE => false,
-];
-```
-
-Lalu jalankan `composer clear-config-cache` sekali.
+Selama pengembangan di komputer sendiri, nyalakan [mode development](#mode-development): selama mode
+itu aktif, cache konfigurasi tidak dibaca maupun dibuat, sehingga perubahan konfigurasi langsung berlaku.
 
 ### Cache data aplikasi
 
@@ -561,6 +562,88 @@ perlu menghapusnya lewat terminal, tambahkan opsi berikut pada `options` di
 ```
 
 Di Windows, pengaturan ini umumnya tidak diperlukan.
+
+## Mode Development
+
+Di mode development, halaman error menampilkan penyebab kesalahan secara lengkap lewat
+[Whoops](https://filp.github.io/whoops/): pesan, potongan kode, jejak pemanggilan, dan isi request.
+Cache konfigurasi juga dimatikan, sehingga perubahan konfigurasi langsung terlihat.
+
+```bash
+composer development-enable    # menyalakan
+composer development-status    # memeriksa
+composer development-disable   # mematikan
+```
+
+> **Peringatan:** halaman Whoops bisa memperlihatkan data rahasia, misalnya kata sandi database.
+> Nyalakan mode development hanya di komputer sendiri, **jangan** di server yang bisa dibuka dari
+> internet, termasuk server uji.
+
+Cara kerjanya memakai paket [laminas-development-mode](https://docs.laminas.dev/laminas-development-mode/),
+pola yang sama seperti kerangka aplikasi Mezzio resmi:
+
+- `development-enable` menyalin `config/development.config.php.dist` menjadi
+  `config/development.config.php` (tidak masuk Git) dan menghapus cache konfigurasi.
+- `config/config.php` memuat file itu paling akhir, jadi isinya menimpa semua pengaturan lain:
+  `'debug' => true` dan pembuat halaman error diganti Whoops.
+- Selama file itu ada, `config/config.php` tidak memakai cache konfigurasi.
+- `development-disable` menghapus file itu lagi.
+
+Paket laminas-development-mode dan filp/whoops tercantum di `require-dev`, jadi tidak ikut terpasang
+bila Anda memakai `composer install --no-dev`. Tanpa Whoops, mode development tetap menampilkan
+detail kesalahan lewat template `error::error`.
+
+Dengan multi-website, mode development berlaku untuk inti dan semua website. Setelah mematikannya,
+hapus juga cache semua website dengan `php dapur clear-config-cache --semua`.
+
+## Log Error
+
+Di mode apa pun, setiap kesalahan yang menghasilkan halaman error dicatat ke `data/log/error.log`.
+Halaman error menampilkan **kode kesalahan**, misalnya `7F3A09C2`. Pengunjung cukup menyampaikan kode
+itu, lalu admin mencarinya:
+
+```bash
+php dapur log-error                # 10 kesalahan terakhir
+php dapur log-error --jumlah=30    # 30 kesalahan terakhir
+php dapur log-error 7F3A09C2       # satu kesalahan beserta jejak pemanggilannya
+```
+
+Yang dicatat: kode, waktu (UTC), host, metode, alamat (tanpa query string), status, jenis dan pesan
+kesalahan, file dan baris, jejak pemanggilan tanpa nilai argumen, serta kesalahan penyebabnya. Isi
+formulir, cookie, dan header **tidak** dicatat, agar kata sandi dan session tidak ikut tersimpan.
+
+Setiap kesalahan disimpan sebagai satu baris JSON ([JSON Lines](https://jsonlines.org/)), sehingga
+mudah dibaca program lain. Bila file melewati 5 MB, isinya dipindah ke `error.log.1` dan file baru
+dimulai. Lokasi dan batas ukurannya bisa diubah di `config/autoload/*.php`:
+
+```php
+return [
+    'log' => [
+        'error'                => '/lokasi/lain/error.log',
+        'error_ukuran_maks_mb' => 10,
+    ],
+];
+```
+
+Folder log dibuat oleh web server dengan izin `2770` dan filenya `660`, jadi hanya web server dan
+anggota grupnya yang bisa membacanya. Web server harus bisa menulis ke `data/` (lihat
+[Izin folder cache](#izin-folder-cache)). Dengan
+[adems/dapur-multiwebsite](https://github.com/AdeMS/dapur-multiwebsite) 1.2 atau lebih baru, setiap
+website mencatat ke folder data websitenya sendiri. Bacalah dengan:
+
+```bash
+php dapur log-error --website=contoh.com    # log satu website
+php dapur log-error --semua                 # inti dan semua website, terbaru lebih dulu
+php dapur log-error --semua 7F3A09C2        # mencari kode tanpa perlu tahu asal websitenya
+```
+
+Dengan `--semua`, log yang tidak bisa dibaca akun Anda dilaporkan per website tanpa menghentikan yang lain.
+Lokasi log website yang diubah lewat `config/autoload/` milik website tidak ikut dibaca oleh `--semua`.
+
+Cara kerjanya: kelas `App\Error\PencatatError` membungkus pembuat halaman error Mezzio
+(`Mezzio\Middleware\ErrorResponseGenerator`) lewat
+[delegator factory](https://docs.laminas.dev/laminas-servicemanager/v4/delegators/). Kesalahan dicatat
+lebih dulu, lalu kodenya diteruskan ke template `error::error` lewat atribut request.
 
 ## Database
 

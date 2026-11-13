@@ -1,7 +1,17 @@
-<?php $this->headTitle('Terjadi kesalahan'); ?>
+<?php
+/**
+ * Halaman error. Kode kesalahan berasal dari App\Error\PencatatError, yang mencatat kesalahan ke log error;
+ * admin mencarinya dengan `php dapur log-error <kode>`. Detail kesalahan hanya ada di mode development.
+ */
+$this->headTitle('Terjadi kesalahan');
+$kode = isset($this->request) ? $this->request->getAttribute(App\Error\LogError::ATRIBUT_KODE) : null;
+?>
 <div class="container">
     <h1><?= $this->escapeHtml((string) $this->status) ?> <?= $this->escapeHtml((string) $this->reason) ?></h1>
     <p class="lead">Maaf, terjadi kesalahan saat memproses permintaan Anda.</p>
+<?php if (is_string($kode)) : ?>
+    <p>Bila kesalahan ini terus muncul, sampaikan kode berikut kepada admin website: <code><?= $this->escapeHtml($kode) ?></code></p>
+<?php endif ?>
 <?php if (isset($this->error) && $this->error): ?>
     <h5>Detail</h5>
     <pre class="bg-body-tertiary p-3"><?= $this->escapeHtml((string) $this->error) ?></pre>

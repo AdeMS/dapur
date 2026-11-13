@@ -15,7 +15,9 @@ use Throwable;
  * file, baris, jejak pemanggilan tanpa nilai argumen, dan kesalahan sebelumnya. Isi formulir, cookie, dan header
  * TIDAK dicatat, agar kata sandi dan session tidak ikut tersimpan.
  *
- * File yang melewati ukuran maksimal dipindah menjadi <file>.1 (menimpa yang lama), lalu file baru dimulai.
+ * Error yang lebih tua dari batas hari (bawaan 90; 0 = tidak dihapus menurut umur) tidak lagi dibaca, dan dibuang
+ * dari file saat error baru dicatat, paling sering sekali sehari. File yang melewati ukuran maksimal dipindah menjadi
+ * <file>.1 (menimpa yang lama), lalu file baru dimulai.
  * Folder log dibuat dengan izin 2770 dan file dengan izin 660, agar anggota grup web server bisa membacanya,
  * tetapi pengguna lain tidak.
  */
@@ -26,12 +28,25 @@ final class LogError
 
     public const UKURAN_MAKS_BAWAAN = 5 * 1024 * 1024;
 
+    /** Umur error paling lama, dalam hari; 0 berarti tidak dihapus menurut umur. */
+    public const HARI_BAWAAN = 90;
+
+    /** Format waktu di log; bisa dibandingkan sebagai teks. */
+    private const FORMAT_WAKTU = 'Y-m-d\TH:i:s\Z';
+
     private const JEJAK_MAKS = 40;
 
     public function __construct(
         public readonly string $file,
         private readonly int $ukuranMaks = self::UKURAN_MAKS_BAWAAN,
+        private readonly int $hari = self::HARI_BAWAAN,
     ) {
+    }
+
+    /** Waktu (UTC, format log) error tertua yang masih disimpan, atau null bila tidak dibatasi umur. */
+    public function batasWaktu(?int $sekarang = null): ?string
+    {
+        return $this->hari > 0 ? gmdate(self::FORMAT_WAKTU, ($sekarang ?? time()) - $this->hari * 86400) : null;
     }
 
     /** Kode acak pendek untuk ditampilkan di halaman error dan dicari di log, misalnya "7F3A09C2". */
@@ -52,7 +67,7 @@ final class LogError
             $uri   = $request?->getUri();
             $baris = json_encode([
                 'kode'       => $kode,
-                'waktu'      => gmdate('Y-m-d\TH:i:s\Z'),
+                'waktu'      => gmdate(self::FORMAT_WAKTU),
                 'host'       => $uri?->getHost() ?? '',
                 'metode'     => $request?->getMethod() ?? '',
                 'alamat'     => $uri?->getPath() ?? '',
@@ -68,6 +83,8 @@ final class LogError
             if (! is_string($baris) || ! $this->siapkanFile()) {
                 return false;
             }
+
+            $this->buangKedaluwarsa();
 
             $baru = ! is_file($this->file);
             if (@file_put_contents($this->file, $baris . "\n", FILE_APPEND | LOCK_EX) === false) {
@@ -92,30 +109,175 @@ final class LogError
     public function baca(int $jumlah = 10, ?string $kode = null): array
     {
         $hasil = [];
-        foreach ([$this->file, $this->file . '.1'] as $file) {
-            if (! is_file($file) || ! is_readable($file)) {
+        foreach ($this->terbaru() as $catatan) {
+            if ($kode !== null && strcasecmp((string) ($catatan['kode'] ?? ''), $kode) !== 0) {
                 continue;
             }
 
-            $baris = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
-            foreach (array_reverse($baris) as $json) {
+            $hasil[] = $catatan;
+            if (count($hasil) >= max(1, $jumlah)) {
+                break;
+            }
+        }
+
+        return $hasil;
+    }
+
+    /**
+     * Jumlah kesalahan yang tercatat sesudah waktu tertentu (UTC, format seperti kunci 'waktu'), paling banyak
+     * $maks. Pembacaan berhenti di catatan pertama yang lebih lama, jadi cukup ringan untuk dipanggil di setiap
+     * halaman, misalnya untuk angka notifikasi.
+     */
+    public function jumlahSejak(?string $waktu, int $maks = 99): int
+    {
+        $jumlah = 0;
+        foreach ($this->terbaru() as $catatan) {
+            if ($waktu !== null && strcmp((string) ($catatan['waktu'] ?? ''), $waktu) <= 0) {
+                break;
+            }
+
+            if (++$jumlah >= $maks) {
+                break;
+            }
+        }
+
+        return $jumlah;
+    }
+
+    /**
+     * Semua catatan yang belum kedaluwarsa, dari yang terbaru: file ini lalu <file>.1, masing-masing dibaca mundur
+     * dari akhir file per blok, sehingga catatan terbaru didapat tanpa membaca seluruh file.
+     *
+     * @return \Generator<int, array<string, mixed>>
+     */
+    public function terbaru(): \Generator
+    {
+        $batas = $this->batasWaktu();
+        foreach ([$this->file, $this->file . '.1'] as $file) {
+            foreach (self::barisMundur($file) as $json) {
                 $catatan = json_decode($json, true);
                 if (! is_array($catatan)) {
                     continue;
                 }
 
-                if ($kode !== null && strcasecmp((string) ($catatan['kode'] ?? ''), $kode) !== 0) {
+                // Catatan disimpan berurutan menurut waktu: sesudah yang kedaluwarsa, sisanya lebih tua lagi.
+                if ($batas !== null && strcmp((string) ($catatan['waktu'] ?? ''), $batas) < 0) {
+                    return;
+                }
+
+                yield $catatan;
+            }
+        }
+    }
+
+    /**
+     * Membuang catatan kedaluwarsa dari file ini dan <file>.1. Agar ringan, file baru ditulis ulang bila catatan
+     * tertuanya sudah lewat sehari dari batas, sehingga penulisan ulang terjadi paling sering sekali sehari.
+     */
+    private function buangKedaluwarsa(): void
+    {
+        $batas = $this->batasWaktu();
+        if ($batas === null) {
+            return;
+        }
+
+        $pemicu = gmdate(self::FORMAT_WAKTU, time() - ($this->hari + 1) * 86400);
+        foreach ([$this->file . '.1', $this->file] as $file) {
+            $tertua = self::waktuBarisPertama($file);
+            if ($tertua === null || strcmp($tertua, $pemicu) >= 0) {
+                continue;
+            }
+
+            $h = @fopen($file, 'c+');
+            if ($h === false) {
+                continue;
+            }
+
+            try {
+                if (! flock($h, LOCK_EX)) {
                     continue;
                 }
 
-                $hasil[] = $catatan;
-                if (count($hasil) >= max(1, $jumlah)) {
-                    return $hasil;
+                $sisa = '';
+                while (($b = fgets($h)) !== false) {
+                    $c = json_decode($b, true);
+                    if (is_array($c) && strcmp((string) ($c['waktu'] ?? ''), $batas) >= 0) {
+                        $sisa .= $b;
+                    }
                 }
+
+                ftruncate($h, 0);
+                rewind($h);
+                fwrite($h, $sisa);
+                fflush($h);
+                flock($h, LOCK_UN);
+            } finally {
+                fclose($h);
+            }
+
+            if ($file !== $this->file && $sisa === '') {
+                @unlink($file);
             }
         }
+    }
 
-        return $hasil;
+    /** Waktu catatan pertama (tertua) di file, atau null bila file kosong atau tidak bisa dibaca. */
+    private static function waktuBarisPertama(string $file): ?string
+    {
+        if (! is_file($file) || ! is_readable($file)) {
+            return null;
+        }
+
+        $h = @fopen($file, 'rb');
+        if ($h === false) {
+            return null;
+        }
+
+        $baris = fgets($h);
+        fclose($h);
+        $c = is_string($baris) ? json_decode($baris, true) : null;
+
+        return is_array($c) && is_string($c['waktu'] ?? null) ? $c['waktu'] : null;
+    }
+
+    /** @return \Generator<int, string> baris tidak kosong, dari akhir file ke awal */
+    private static function barisMundur(string $file): \Generator
+    {
+        if (! is_file($file) || ! is_readable($file)) {
+            return;
+        }
+
+        $h = @fopen($file, 'rb');
+        if ($h === false) {
+            return;
+        }
+
+        try {
+            fseek($h, 0, SEEK_END);
+            $posisi = ftell($h);
+            $sisa   = '';
+            while ($posisi > 0) {
+                $baca    = min(8192, $posisi);
+                $posisi -= $baca;
+                fseek($h, $posisi);
+                $sisa  = fread($h, $baca) . $sisa;
+                $baris = explode("\n", $sisa);
+
+                // Potongan pertama mungkin baris yang belum lengkap; simpan untuk blok berikutnya.
+                $sisa = $posisi > 0 ? array_shift($baris) : '';
+                foreach (array_reverse($baris) as $b) {
+                    if (trim($b) !== '') {
+                        yield $b;
+                    }
+                }
+            }
+
+            if (trim($sisa) !== '') {
+                yield $sisa;
+            }
+        } finally {
+            fclose($h);
+        }
     }
 
     /** Membuat folder log bila belum ada dan memindahkan file yang sudah terlalu besar. */

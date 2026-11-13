@@ -12,6 +12,7 @@ use Psr\Container\ContainerInterface;
  *     'log' => [
  *         'error'                => '/lokasi/error.log',   // bawaan: data/log/error.log di folder inti
  *         'error_ukuran_maks_mb' => 5,                     // lebih dari ini, file dipindah ke error.log.1
+ *         'error_hari'           => 90,                    // error lebih tua dihapus; 0 = tidak dihapus
  *     ],
  *
  * Paket multi-website mengarahkan log setiap website ke folder data website itu sendiri.
@@ -25,6 +26,7 @@ final class LogErrorFactory
         return new LogError(
             (string) ($log['error'] ?? dirname(__DIR__, 4) . '/data/log/error.log'),
             (int) (max(1, (float) ($log['error_ukuran_maks_mb'] ?? 5)) * 1024 * 1024),
+            max(0, (int) ($log['error_hari'] ?? LogError::HARI_BAWAAN)),
         );
     }
 }

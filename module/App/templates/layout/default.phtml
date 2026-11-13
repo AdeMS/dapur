@@ -1,6 +1,12 @@
 <?php
 $this->headTitle($this->infoWebsite()->judul())->setSeparator(' - ');
 $this->headMeta()->appendName('author', 'Ade M Saragih');
+
+// Placeholder yang diisi modul (berisi <li>): 'menu' di navbar, 'menu-sebelum-tema' di kiri pemilih tema,
+// 'menu-kanan' di kanan pemilih tema, dan 'menu-samping' untuk menu samping kiri. Bila menu samping berisi, tombol menu (hamburger) di layar kecil
+// membuka menu samping sebagai panel geser.
+$menu        = $this->placeholder()->toString('menu');
+$menuSamping = trim($this->placeholder()->toString('menu-samping'));
 ?>
 <!DOCTYPE html>
 <html lang="id" class="h-100" data-tema="<?= $this->escapeHtmlAttr($this->infoWebsite()->tema()) ?>" data-bs-theme="light">
@@ -20,16 +26,18 @@ $this->headMeta()->appendName('author', 'Ade M Saragih');
     </head>
     <body class="d-flex flex-column h-100">
         <header>
-            <nav class="navbar navbar-expand-md fixed-top dapur-bingkai">
+            <nav class="navbar navbar-expand-lg fixed-top dapur-bingkai">
                 <div class="container-fluid">
                     <a class="navbar-brand py-0" href="https://github.com/AdeMS/dapur">
                         <img src="/asset/dapur/img/brand-logo.png" alt="Dapur AdeMS" height="40" />
                     </a>
                     <!--
-                        Pemilih tema dan placeholder 'menu-kanan' (berisi <li>, misalnya menu user):
-                        selalu terlihat, di HP berada di samping tombol menu
+                        Pemilih tema, diapit placeholder 'menu-sebelum-tema' dan 'menu-kanan' (berisi <li>, misalnya
+                        menu user):
+                        selalu terlihat. Di layar kecil: tombol menu di kiri, logo di tengah, bagian ini di kanan.
                     -->
-                    <ul class="navbar-nav dapur-tema flex-row align-items-center gap-2 ms-auto order-md-last">
+                    <ul class="navbar-nav dapur-tema flex-row align-items-center gap-3 ms-auto order-lg-last">
+<?= $this->placeholder()->toString('menu-sebelum-tema') ?>
                         <li class="nav-item dropdown">
                             <button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center" id="pilihTema" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Pilih tema">
                                 <i class="bi bi-circle-half tema-ikon-aktif"></i>
@@ -42,22 +50,62 @@ $this->headMeta()->appendName('author', 'Ade M Saragih');
                         </li>
 <?= $this->placeholder()->toString('menu-kanan') ?>
                     </ul>
-                    <button class="navbar-toggler collapsed ms-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+<?php if ($menuSamping !== '') : ?>
+                    <button class="navbar-toggler collapsed dapur-toggler-samping" type="button" data-bs-toggle="offcanvas" data-bs-target="#dapurSamping" aria-controls="dapurSamping" aria-expanded="false" aria-label="Buka menu">
+<?php else : ?>
+                    <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Buka menu">
+<?php endif ?>
                         <span class="toggler-icon top-bar"></span>
                         <span class="toggler-icon middle-bar"></span>
                         <span class="toggler-icon bottom-bar"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarCollapse">
                         <!-- Menu navigasi website; modul mengisinya lewat placeholder 'menu' (berisi <li>) -->
-                        <ul class="navbar-nav mb-2 mb-md-0">
-<?= $this->placeholder()->toString('menu') ?>
+                        <ul class="navbar-nav mb-2 mb-lg-0">
+<?= $menu ?>
                         </ul>
                     </div>
                 </div>
             </nav>
         </header>
         <main class="flex-shrink-0 mt-5 pt-4">
+<?php if ($menuSamping === '') : ?>
 <?= $this->content ?>
+<?php else : ?>
+            <!--
+                Menu samping: di layar lebar selalu tampil di kiri, di layar kecil menjadi panel geser yang
+                dibuka tombol menu di navbar. Item menu navbar ('menu') ikut ditampilkan di panel ini pada layar
+                kecil, karena tombol menu dipakai untuk menu samping.
+            -->
+            <div class="container-fluid px-lg-4">
+                <div class="d-lg-flex gap-4 align-items-start">
+                    <div class="dapur-samping-kolom">
+                        <aside class="offcanvas-lg offcanvas-start" tabindex="-1" id="dapurSamping" aria-labelledby="dapurSampingJudul">
+                            <div class="offcanvas-header">
+                                <h2 class="offcanvas-title h6 mb-0" id="dapurSampingJudul"><?= $this->escapeHtml($this->infoWebsite()->judul()) ?></h2>
+                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#dapurSamping" aria-label="Tutup"></button>
+                            </div>
+                            <div class="offcanvas-body">
+                                <nav class="dapur-samping" aria-label="Menu samping">
+                                    <ul class="nav flex-column gap-1">
+<?= $menuSamping ?>
+                                    </ul>
+<?php if (trim($menu) !== '') : ?>
+                                    <hr class="d-lg-none">
+                                    <ul class="nav flex-column gap-1 d-lg-none">
+<?= $menu ?>
+                                    </ul>
+<?php endif ?>
+                                </nav>
+                            </div>
+                        </aside>
+                    </div>
+                    <div class="flex-grow-1 dapur-samping-isi">
+<?= $this->content ?>
+                    </div>
+                </div>
+            </div>
+<?php endif ?>
         </main>
         <footer class="footer mt-auto py-3 dapur-bingkai">
             <div class="container d-flex flex-column gap-1 text-body-secondary">
@@ -66,5 +114,8 @@ $this->headMeta()->appendName('author', 'Ade M Saragih');
             </div>
         </footer>
         <script src="/asset/bootstrap/js/bootstrap.bundle.min.js"></script>
+<?php if ($menuSamping !== '') : ?>
+        <script src="/asset/dapur/js/samping.js"></script>
+<?php endif ?>
     </body>
 </html>

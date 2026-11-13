@@ -94,6 +94,10 @@
 .dapur-tema .dropdown-menu {
     position: absolute;
 }
+/* Jarak antara kelompok tombol (tema dan 'menu-alat') dengan 'menu-kanan', misalnya avatar user */
+.dapur-tema .dapur-pemisah {
+    width: .5rem;
+}
 
 /* Sembunyikan tombol menu (hamburger) selama menu navigasi belum berisi item, kecuali tombol menu samping */
 .navbar:not(:has(#navbarCollapse li)) .navbar-toggler:not(.dapur-toggler-samping) {
@@ -340,6 +344,12 @@ a:hover {
         grid-row: 1;
         justify-self: end;
     }
+    /* Bootstrap menghapus jarak dalam tombol navbar selama navbar belum terbentang; tombol tema, notifikasi, dan
+       avatar memakai jarak yang sama seperti di layar lebar agar tidak saling menempel */
+    .navbar .dapur-tema > .nav-item > .nav-link {
+        padding-left: var(--bs-navbar-nav-link-padding-x);
+        padding-right: var(--bs-navbar-nav-link-padding-x);
+    }
     .navbar .navbar-collapse {
         grid-column: 1 / -1;
         grid-row: 2;
@@ -386,6 +396,32 @@ a:hover {
         overflow-y: auto;
     }
 }
+/**
+ * Layar HP (di bawah 576px): logo tidak lagi tepat di tengah layar, tetapi di tengah ruang antara tombol menu
+ * dan tombol-tombol di kanan. Ukuran logo tetap; logo bergeser ke kiri seperlunya agar tombol tema, notifikasi,
+ * dan avatar tidak berdesakan dengannya.
+ */
+@media (max-width: 575.98px) {
+    .navbar > .container-fluid {
+        grid-template-columns: auto 1fr auto;
+        column-gap: .5rem;
+        /* Tepi kiri dan kanan navbar sedikit dikurangi (bawaan .75rem) */
+        padding-left: .5rem;
+        padding-right: .5rem;
+    }
+    /* Hamburger tetap di posisi semula (tepi .5rem + .75rem = 1.25rem, sama seperti sebelum tepi dikurangi) */
+    .navbar .navbar-toggler {
+        margin-left: .75rem;
+    }
+    .navbar .dapur-tema > .nav-item > .nav-link {
+        padding-left: .3rem;
+        padding-right: .3rem;
+    }
+    .navbar .navbar-brand {
+        justify-self: center;
+    }
+}
+
 @media (max-width: 991.98px) and (prefers-reduced-motion: reduce) {
     #dapurSamping.offcanvas-lg {
         --bs-offcanvas-transition: none;

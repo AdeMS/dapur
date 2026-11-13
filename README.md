@@ -299,25 +299,29 @@ Tambahkan item menu di `module/App/templates/layout/default.phtml`, di dalam `<u
 bagian bertanda `Menu navigasi website`:
 
 ```html
-<ul class="navbar-nav mb-2 mb-md-0">
+<ul class="navbar-nav mb-2 mb-lg-0">
     <li class="nav-item"><a class="nav-link" href="/">Beranda</a></li>
     <li class="nav-item"><a class="nav-link" href="/tentang">Tentang</a></li>
 </ul>
 ```
 
-Di layar lebar, menu sejajar dengan teks di dalam panel konten. Di HP, menu masuk ke tombol
-menu (hamburger). Tombol ini otomatis disembunyikan selama menu belum berisi item, dan muncul
-kembali begitu Anda menambahkan item pertama.
+Di layar lebar (992px ke atas), menu sejajar dengan teks di dalam panel konten. Di layar yang
+lebih kecil, navbar tersusun dengan tombol menu (hamburger) di kiri, logo di tengah, serta
+pemilih tema dan menu kanan di kanan; menu navigasi masuk ke tombol menu. Tombol ini otomatis
+disembunyikan selama menu belum berisi item, dan muncul kembali begitu Anda menambahkan item
+pertama.
 
-Modul juga bisa menambahkan menu tanpa mengubah layout, lewat dua placeholder yang dirender
+Modul juga bisa menambahkan menu tanpa mengubah layout, lewat empat placeholder yang dirender
 layout:
 
 | Placeholder | Letak |
 |---|---|
-| `menu` | Setelah item menu navigasi; di HP ikut masuk ke tombol menu |
+| `menu` | Setelah item menu navigasi; di layar kecil ikut masuk ke tombol menu |
+| `menu-sebelum-tema` | Di sebelah kiri pemilih tema, selalu terlihat (juga di HP), misalnya untuk tombol layar penuh |
 | `menu-kanan` | Di sebelah kanan pemilih tema, selalu terlihat (juga di HP), misalnya untuk menu user |
+| `menu-samping` | Menu samping di kiri halaman, misalnya untuk dashboard; lihat di bawah |
 
-Isi keduanya dengan item `<li>` dari template modul:
+Isi keempatnya dengan item `<li>` dari template modul:
 
 ```php
 <?php $this->placeholder('menu')->captureStart() ?>
@@ -325,9 +329,30 @@ Isi keduanya dengan item `<li>` dari template modul:
 <?php $this->placeholder('menu')->captureEnd() ?>
 ```
 
-Bila Anda memakai layout sendiri, tambahkan `<?= $this->placeholder()->toString('menu') ?>` dan
-`<?= $this->placeholder()->toString('menu-kanan') ?>` di tempat yang sama seperti layout bawaan
-agar menu modul (misalnya [adems/dapur-dashboard](https://github.com/AdeMS/dapur-dashboard)) tampil.
+Bila Anda memakai layout sendiri, salin bagian yang menampilkan ketiga placeholder dari layout
+bawaan agar menu modul (misalnya [adems/dapur-dashboard](https://github.com/AdeMS/dapur-dashboard))
+tampil.
+
+### Menu samping
+
+Bila placeholder `menu-samping` berisi item, layout menampilkan menu samping di kiri halaman:
+
+- Di layar lebar, menu samping berupa panel di samping isi halaman yang tetap terlihat saat
+  halaman digulir.
+- Di layar kecil, menu samping disembunyikan dan dibuka dengan tombol menu (hamburger) di kiri
+  navbar sebagai panel geser ([offcanvas Bootstrap](https://getbootstrap.com/docs/5.3/components/offcanvas/)).
+  Item dari placeholder `menu`, bila ada, ikut tampil di panel ini.
+
+```php
+<?php $this->placeholder('menu-samping')->captureStart() ?>
+    <li class="dapur-samping-judul">Laporan</li>
+    <li class="nav-item"><a class="nav-link active" href="/laporan"><i class="bi bi-graph-up"></i>Ringkasan</a></li>
+    <li class="nav-item"><a class="nav-link" href="/laporan/bulanan"><i class="bi bi-calendar3"></i>Bulanan</a></li>
+<?php $this->placeholder('menu-samping')->captureEnd() ?>
+```
+
+Kelas `active` menandai halaman yang sedang dibuka, dan `dapur-samping-judul` membuat judul kecil
+di atas item. Halaman tanpa item menu samping tampil seperti biasa tanpa panel di kiri.
 
 ### Mengubah warna tema
 

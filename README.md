@@ -327,9 +327,13 @@ layout:
 | Placeholder | Letak |
 |---|---|
 | `menu` | Setelah item menu navigasi; di layar kecil ikut masuk ke tombol menu |
-| `menu-sebelum-tema` | Di sebelah kiri pemilih tema, selalu terlihat (juga di HP), misalnya untuk tombol layar penuh |
-| `menu-kanan` | Di sebelah kanan pemilih tema, selalu terlihat (juga di HP), misalnya untuk menu user |
+| `menu-alat` | Tombol kecil yang dikelompokkan bersama pemilih tema, di kanannya; selalu terlihat (juga di HP). Misalnya tombol layar penuh atau notifikasi |
+| `menu-kanan` | Paling kanan, sedikit terpisah dari kelompok tombol; selalu terlihat. Misalnya menu user |
 | `menu-samping` | Menu samping di kiri halaman, misalnya untuk dashboard; lihat di bawah |
+
+Jadi navbar kanan tersusun: pemilih tema, isi `menu-alat`, jarak kecil, lalu isi `menu-kanan`.
+Placeholder `menu-sebelum-tema` dari Dapur 2.7 dan 2.8 masih ditampilkan (di kiri pemilih tema) agar
+modul lama tetap berjalan, tetapi sebaiknya diganti `menu-alat`.
 
 Isi keempatnya dengan item `<li>` dari template modul:
 
@@ -339,7 +343,7 @@ Isi keempatnya dengan item `<li>` dari template modul:
 <?php $this->placeholder('menu')->captureEnd() ?>
 ```
 
-Bila Anda memakai layout sendiri, salin bagian yang menampilkan ketiga placeholder dari layout
+Bila Anda memakai layout sendiri, salin bagian yang menampilkan placeholder-placeholder ini dari layout
 bawaan agar menu modul (misalnya [adems/dapur-dashboard](https://github.com/AdeMS/dapur-dashboard))
 tampil.
 
@@ -613,14 +617,22 @@ kesalahan, file dan baris, jejak pemanggilan tanpa nilai argumen, serta kesalaha
 formulir, cookie, dan header **tidak** dicatat, agar kata sandi dan session tidak ikut tersimpan.
 
 Setiap kesalahan disimpan sebagai satu baris JSON ([JSON Lines](https://jsonlines.org/)), sehingga
-mudah dibaca program lain. Bila file melewati 5 MB, isinya dipindah ke `error.log.1` dan file baru
-dimulai. Lokasi dan batas ukurannya bisa diubah di `config/autoload/*.php`:
+mudah dibaca program lain. Log dibersihkan otomatis dengan dua cara:
+
+- **Menurut umur:** kesalahan yang lebih tua dari 90 hari tidak lagi ditampilkan, dan dibuang dari file
+  saat kesalahan baru dicatat (paling sering sekali sehari, agar ringan). Membaca atau menandai sudah dibaca
+  tidak menghapus apa pun.
+- **Menurut ukuran:** bila file melewati 5 MB, isinya dipindah ke `error.log.1` (yang lama tertimpa) dan
+  file baru dimulai.
+
+Lokasi, batas ukuran, dan batas umurnya bisa diubah di `config/autoload/*.php`:
 
 ```php
 return [
     'log' => [
         'error'                => '/lokasi/lain/error.log',
         'error_ukuran_maks_mb' => 10,
+        'error_hari'           => 30,   // 0 = tidak dihapus menurut umur
     ],
 ];
 ```

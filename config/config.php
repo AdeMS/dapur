@@ -18,6 +18,11 @@ $cacheConfig = [
         : dirname(__DIR__) . '/data/cache/config-cache.php',
 ];
 
+// Mode development: aktif selama config/development.config.php ada (dibuat oleh `composer development-enable`,
+// dihapus oleh `composer development-disable`). Selama mode ini aktif, cache konfigurasi tidak dibaca maupun
+// dibuat, sehingga perubahan konfigurasi langsung berlaku di inti dan di semua website.
+$modeDevelopment = is_file(__DIR__ . '/development.config.php');
+
 // Modul tambahan yang aktif di inti (opsional, diabaikan Git).
 // Isinya daftar nama ConfigProvider modul, misalnya:
 //     return [AdeMS\Dapur\MultiWebsite\ConfigProvider::class];
@@ -55,7 +60,11 @@ $aggregator = new ConfigAggregator([
     // Lapisan website: diisi paket multi-website lewat konstanta DAPUR_CONFIG_PROVIDERS
     // sebelum file ini dimuat. Paling akhir, agar konfigurasi website menimpa semua bawaan inti.
     ...(defined('DAPUR_CONFIG_PROVIDERS') && is_array(DAPUR_CONFIG_PROVIDERS) ? DAPUR_CONFIG_PROVIDERS : []),
-], $cacheConfig['config_cache_path']);
+
+    // Pengaturan mode development (debug, halaman error lengkap), dimuat paling akhir agar menang.
+    // File ini hanya ada selama mode development aktif; lihat config/development.config.php.dist.
+    new PhpFileProvider(realpath(__DIR__) . '/development.config.php'),
+], $modeDevelopment ? null : $cacheConfig['config_cache_path']);
 
 // Mengembalikan konfigurasi yang telah digabungkan
 return $aggregator->getMergedConfig();

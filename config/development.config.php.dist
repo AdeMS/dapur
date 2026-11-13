@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * Pengaturan mode development.
+ *
+ * Jangan ubah file .dist ini untuk instalasi Anda sendiri. `composer development-enable` menyalinnya menjadi
+ * config/development.config.php (diabaikan Git), yang dimuat paling akhir oleh config/config.php.
+ * `composer development-disable` menghapus salinan itu lagi.
+ *
+ * PERINGATAN: halaman error di mode ini menampilkan isi kode, jejak pemanggilan, variabel server, dan bisa juga
+ * data rahasia seperti kata sandi database. Aktifkan hanya di komputer sendiri, JANGAN di server yang bisa
+ * dibuka dari internet.
+ */
+
+declare(strict_types=1);
+
+use Mezzio\Container;
+use Mezzio\Middleware\ErrorResponseGenerator;
+
+$whoops = class_exists(\Whoops\Run::class)
+    ? [
+        // Halaman error lengkap dari Whoops (paket filp/whoops, terpasang sebagai require-dev)
+        'dependencies' => [
+            'factories' => [
+                ErrorResponseGenerator::class => Container\WhoopsErrorResponseGeneratorFactory::class,
+                'Mezzio\Whoops'               => Container\WhoopsFactory::class,
+                'Mezzio\WhoopsPageHandler'    => Container\WhoopsPageHandlerFactory::class,
+            ],
+        ],
+        'whoops' => [
+            'json_exceptions' => [
+                'display'    => true,
+                'show_trace' => true,
+                'ajax_only'  => true,
+            ],
+        ],
+    ]
+    : [];
+
+return [
+    // Detail kesalahan ditampilkan di halaman error (bila Whoops tidak terpasang, lewat template error::error)
+    'debug' => true,
+] + $whoops;

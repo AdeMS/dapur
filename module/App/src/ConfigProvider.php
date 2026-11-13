@@ -39,6 +39,13 @@ final class ConfigProvider
 
                 // Koneksi database (lihat config/autoload/database.local.php.dist)
                 \Laminas\Db\Adapter\AdapterInterface::class => Db\AdapterFactory::class,
+
+                // Log error (lihat App\Error\LogErrorFactory)
+                Error\LogError::class => Error\LogErrorFactory::class,
+            ],
+            // Setiap kesalahan dicatat ke log error sebelum halaman error dibuat, di mode apa pun
+            'delegators' => [
+                \Mezzio\Middleware\ErrorResponseGenerator::class => [Error\PencatatErrorDelegator::class],
             ],
             'aliases' => [
                 \Laminas\Db\Adapter\Adapter::class => \Laminas\Db\Adapter\AdapterInterface::class,

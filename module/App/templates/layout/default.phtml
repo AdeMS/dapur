@@ -2,11 +2,15 @@
 $this->headTitle($this->infoWebsite()->judul())->setSeparator(' - ');
 $this->headMeta()->appendName('author', 'Ade M Saragih');
 
-// Placeholder yang diisi modul (berisi <li>): 'menu' di navbar, 'menu-sebelum-tema' di kiri pemilih tema,
-// 'menu-kanan' di kanan pemilih tema, dan 'menu-samping' untuk menu samping kiri. Bila menu samping berisi, tombol menu (hamburger) di layar kecil
-// membuka menu samping sebagai panel geser.
+// Placeholder yang diisi modul (berisi <li>):
+// - 'menu': item menu navigasi di navbar;
+// - 'menu-alat': tombol kecil yang dikelompokkan bersama pemilih tema, di kanannya (misalnya layar penuh, notifikasi);
+// - 'menu-kanan': paling kanan, sedikit terpisah dari kelompok tombol (misalnya menu user);
+// - 'menu-samping': menu samping kiri. Bila berisi, tombol menu (hamburger) di layar kecil membukanya sebagai panel.
+// 'menu-sebelum-tema' dari Dapur 2.7 masih didukung (tampil di kiri pemilih tema), tetapi sebaiknya diganti 'menu-alat'.
 $menu        = $this->placeholder()->toString('menu');
 $menuSamping = trim($this->placeholder()->toString('menu-samping'));
+$menuKanan   = trim($this->placeholder()->toString('menu-kanan'));
 ?>
 <!DOCTYPE html>
 <html lang="id" class="h-100" data-tema="<?= $this->escapeHtmlAttr($this->infoWebsite()->tema()) ?>" data-bs-theme="light">
@@ -32,11 +36,10 @@ $menuSamping = trim($this->placeholder()->toString('menu-samping'));
                         <img src="/asset/dapur/img/brand-logo.png" alt="Dapur AdeMS" height="40" />
                     </a>
                     <!--
-                        Pemilih tema, diapit placeholder 'menu-sebelum-tema' dan 'menu-kanan' (berisi <li>, misalnya
-                        menu user):
+                        Kelompok tombol (pemilih tema + placeholder 'menu-alat'), lalu placeholder 'menu-kanan':
                         selalu terlihat. Di layar kecil: tombol menu di kiri, logo di tengah, bagian ini di kanan.
                     -->
-                    <ul class="navbar-nav dapur-tema flex-row align-items-center gap-3 ms-auto order-lg-last">
+                    <ul class="navbar-nav dapur-tema flex-row align-items-center gap-1 ms-auto order-lg-last">
 <?= $this->placeholder()->toString('menu-sebelum-tema') ?>
                         <li class="nav-item dropdown">
                             <button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center" id="pilihTema" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Pilih tema">
@@ -48,7 +51,12 @@ $menuSamping = trim($this->placeholder()->toString('menu-samping'));
                                 <li><button type="button" class="dropdown-item d-flex align-items-center" data-tema-pilihan="auto" aria-pressed="false"><i class="bi bi-circle-half me-2"></i>Otomatis</button></li>
                             </ul>
                         </li>
-<?= $this->placeholder()->toString('menu-kanan') ?>
+<?= $this->placeholder()->toString('menu-alat') ?>
+<?php if ($menuKanan !== '') : ?>
+                        <li class="dapur-pemisah" aria-hidden="true"></li>
+<?= $menuKanan ?>
+
+<?php endif ?>
                     </ul>
 <?php if ($menuSamping !== '') : ?>
                     <button class="navbar-toggler collapsed dapur-toggler-samping" type="button" data-bs-toggle="offcanvas" data-bs-target="#dapurSamping" aria-controls="dapurSamping" aria-expanded="false" aria-label="Buka menu">

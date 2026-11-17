@@ -183,6 +183,11 @@ body {
     --bs-dropdown-link-hover-color: #0a5700;
 }
 
+/* Label isian form dicetak semi-tebal, seragam dengan tombol utama form */
+[data-tema=dapur] .form-label {
+    font-weight: 600;
+}
+
 /* Accordion yang terbuka memakai hijau tema, bukan biru bawaan Bootstrap */
 [data-tema=dapur] .accordion {
     --bs-accordion-active-color: #0a5700;
@@ -201,10 +206,10 @@ body {
     --bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23a3e4bf' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
 }
 
-/* Mode gelap: gambar latar yang sama, diberi lapisan gelap transparan */
+/* Mode gelap: gambar latar yang sama, diberi lapisan gelap transparan (55%) */
 [data-bs-theme=dark] body {
     background-image:
-        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+        linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
         url('/asset/dapur/img/bg-image.png');
 }
 
@@ -447,19 +452,22 @@ a:hover {
     }
 
     /**
-     * Navbar dibagi tiga kolom: logo, menu, dan pemilih tema.
-     * Lebar kolom logo = jarak tepi layar ke tepi konten ditambah padding panel,
-     * sehingga menu sejajar dengan teks di dalam panel konten (.jumbotron).
-     * Jika layar terlalu sempit, kolom logo tidak akan lebih kecil dari logonya
-     * sendiri (max-content).
+     * Navbar dibagi tiga kolom: logo, menu, dan pemilih tema. Isi navbar selebar .container halaman
+     * (--dapur-container), sehingga logo sejajar dengan tepi kiri isi halaman dan footer, dan tombol paling kanan
+     * sejajar dengan tepi kanannya.
      */
     .navbar > .container-fluid {
         display: grid;
-        grid-template-columns: minmax(max-content, calc((100% + 1.5rem - var(--dapur-container)) / 2 + var(--dapur-panel-padding))) 1fr auto;
+        grid-template-columns: auto 1fr auto;
+        max-width: var(--dapur-container);
     }
-    /* Teks menu pertama tepat di garis tepi konten (nav-link memiliki padding kiri 0.5rem) */
-    .navbar .navbar-collapse > .navbar-nav {
-        margin-left: -0.5rem;
+    /* Halaman bermenu samping: isi halaman selebar layar sampai xl (.container-xl), jadi navbar juga */
+    .navbar:has(.dapur-toggler-samping) > .container-fluid {
+        max-width: none;
+    }
+    /* Tombol paling kanan (pemilih tema atau avatar) tepat di tepi kanan isi; nav-link memiliki padding kanan 0.5rem */
+    .navbar .dapur-tema {
+        margin-right: -0.5rem;
     }
 
     /* Menu samping: panel melayang di kiri yang tetap terlihat saat halaman digulir */
@@ -485,12 +493,25 @@ a:hover {
         border-color: rgba(111, 207, 151, .6);
         box-shadow: 0 0 .6rem rgba(111, 207, 151, .55);
     }
+    /* Isi halaman di samping menu memenuhi kolomnya: .container milik halaman tidak menambah batas lebar dan
+       jarak tepi sendiri, sehingga tepi kanannya sejajar dengan wadah (dan menu kanan navbar) */
+    .dapur-samping-isi > .container {
+        max-width: none;
+        padding-left: 0;
+        padding-right: 0;
+    }
 }
 
 /* X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
     :root {
         --dapur-container: 1140px;
+    }
+
+    /* Halaman dengan menu samping: navbar selebar wadah menu samping + isi (.container-xl), sehingga logo sejajar
+       dengan tepi kiri menu samping dan menu kanan sejajar dengan tepi kanan isi */
+    .navbar:has(.dapur-toggler-samping) > .container-fluid {
+        max-width: var(--dapur-container);
     }
 }
 

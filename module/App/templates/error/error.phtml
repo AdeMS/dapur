@@ -6,14 +6,32 @@
 $this->headTitle('Terjadi kesalahan');
 $kode = isset($this->request) ? $this->request->getAttribute(App\Error\LogError::ATRIBUT_KODE) : null;
 ?>
-<div class="container">
-    <h1><?= $this->escapeHtml((string) $this->status) ?> <?= $this->escapeHtml((string) $this->reason) ?></h1>
-    <p class="lead">Maaf, terjadi kesalahan saat memproses permintaan Anda.</p>
+<div class="container pb-5">
+    <div class="jumbotron text-center">
+        <i class="bi bi-exclamation-triangle display-1 text-body-secondary"></i>
+        <h1 class="display-5 fw-bold mt-3"><?= $this->escapeHtml((string) $this->status) ?></h1>
+        <h2 class="h4 mb-3"><?= $this->escapeHtml((string) $this->reason) ?></h2>
+        <p class="lead mb-1">Maaf, terjadi kesalahan saat memproses permintaan Anda.</p>
 <?php if (is_string($kode)) : ?>
-    <p>Bila kesalahan ini terus muncul, sampaikan kode berikut kepada admin website: <code><?= $this->escapeHtml($kode) ?></code></p>
+        <p class="text-body-secondary mb-4">Bila kesalahan ini terus muncul, sampaikan kode berikut kepada admin website: <code><?= $this->escapeHtml($kode) ?></code></p>
+<?php else : ?>
+        <div class="mb-4"></div>
 <?php endif ?>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <!-- Tombol Kembali hanya tampil bila ada halaman sebelumnya (diatur skrip di bawah) -->
+            <button type="button" class="btn btn-outline-secondary d-none dapur-kembali" onclick="history.back()"><i class="bi bi-arrow-left"></i> Kembali</button>
+            <a href="/" class="btn btn-dark"><i class="bi bi-house-door"></i> Ke beranda</a>
+        </div>
+        <script>
+            if (history.length > 1) {
+                document.querySelectorAll('.dapur-kembali').forEach((tombol) => tombol.classList.remove('d-none'));
+            }
+        </script>
 <?php if (isset($this->error) && $this->error): ?>
-    <h5>Detail</h5>
-    <pre class="bg-body-tertiary p-3"><?= $this->escapeHtml((string) $this->error) ?></pre>
+        <div class="text-start mt-4">
+            <h5>Detail</h5>
+            <pre class="bg-body-tertiary p-3"><?= $this->escapeHtml((string) $this->error) ?></pre>
+        </div>
 <?php endif ?>
+    </div>
 </div>

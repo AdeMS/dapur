@@ -83,9 +83,10 @@ $menuKanan   = trim($this->placeholder()->toString('menu-kanan'));
             <!--
                 Menu samping: di layar lebar selalu tampil di kiri, di layar kecil menjadi panel geser yang
                 dibuka tombol menu di navbar. Item menu navbar ('menu') ikut ditampilkan di panel ini pada layar
-                kecil, karena tombol menu dipakai untuk menu samping.
+                kecil, karena tombol menu dipakai untuk menu samping. Menu samping dan isi halaman berada di satu
+                wadah selebar .container (layar xl ke atas); logo dan menu kanan navbar sejajar dengan tepinya.
             -->
-            <div class="container-fluid px-lg-4">
+            <div class="container-xl dapur-samping-wadah">
                 <div class="d-lg-flex gap-4 align-items-start">
                     <div class="dapur-samping-kolom">
                         <aside class="offcanvas-lg offcanvas-start" tabindex="-1" id="dapurSamping" aria-labelledby="dapurSampingJudul">
@@ -117,8 +118,8 @@ $menuKanan   = trim($this->placeholder()->toString('menu-kanan'));
         </main>
         <footer class="footer mt-auto py-3 dapur-bingkai">
             <div class="container d-flex flex-column gap-1 text-body-secondary">
-                <span>&copy; 2000-<?= date('Y') ?> Ade M Saragih (<a href="https://www.adems.id/" class="link-body-emphasis fw-bold text-decoration-none">AdeMS</a>).</span>
-                <span class="small"><a href="https://github.com/AdeMS/dapur" class="link-body-emphasis text-decoration-none">Dapur AdeMS</a> adalah bagian dari <a href="https://www.adems.id/" class="link-body-emphasis text-decoration-none">Tempat AdeMS</a>, tempat Ade M Saragih untuk bermain dan belajar.</span>
+                <span>&copy; 2000-<?= date('Y') ?> Ade M Saragih (<a href="https://www.adems.id/" class="fw-bold text-decoration-none">AdeMS</a>).</span>
+                <span class="small"><a href="https://github.com/AdeMS/dapur" class="text-decoration-none">Dapur AdeMS</a> adalah bagian dari <a href="https://www.adems.id/" class="text-decoration-none">Tempat AdeMS</a>, tempat Ade M Saragih untuk bermain dan belajar.</span>
             </div>
         </footer>
         <script src="/asset/bootstrap/js/bootstrap.bundle.min.js"></script>

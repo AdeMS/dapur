@@ -315,7 +315,8 @@ bagian bertanda `Menu navigasi website`:
 </ul>
 ```
 
-Di layar lebar (992px ke atas), menu sejajar dengan teks di dalam panel konten. Di layar yang
+Di layar lebar (992px ke atas), isi navbar selebar isi halaman: logo sejajar dengan tepi kiri isi
+halaman dan footer, menu tepat di kanan logo, dan tombol paling kanan sejajar dengan tepi kanan isi. Di layar yang
 lebih kecil, navbar tersusun dengan tombol menu (hamburger) di kiri, logo di tengah, serta
 pemilih tema dan menu kanan di kanan; menu navigasi masuk ke tombol menu. Tombol ini otomatis
 disembunyikan selama menu belum berisi item, dan muncul kembali begitu Anda menambahkan item

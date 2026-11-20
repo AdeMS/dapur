@@ -145,6 +145,17 @@
     box-shadow: inset 3px 0 0 var(--bs-link-color);
 }
 
+/* Tab (nav-tabs): tab terpilih hijau tema dengan garis atas, seperti item aktif menu samping; tab lain warna teks biasa */
+[data-tema=dapur] .nav-tabs {
+    --bs-nav-link-color: var(--bs-secondary-color);
+    --bs-nav-link-hover-color: var(--bs-link-color);
+    --bs-nav-tabs-link-active-color: var(--bs-link-color);
+}
+[data-tema=dapur] .nav-tabs .nav-link.active {
+    font-weight: 600;
+    box-shadow: inset 0 3px 0 var(--bs-link-color);
+}
+
 /* Logo berwarna hijau muda; di mode terang digelapkan agar tetap kontras */
 [data-bs-theme=light] .navbar-brand img {
     filter: brightness(0.6) saturate(1.3);

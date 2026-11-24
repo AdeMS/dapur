@@ -7,6 +7,7 @@
  *   php dapur                 menampilkan daftar perintah
  *   php dapur cek-database
  *   php dapur log-error [<kode>]
+ *   php dapur pasang             (dengan paket adems/dapur-database)
  *
  * Lewat Composer juga bisa, tetapi opsi hanya terbaca bila ditulis setelah `--`:
  *
@@ -54,6 +55,10 @@ switch ($perintah) {
         require 'bin/log-error.php';
         exit(0);
 
+    case 'pasang':
+        require 'bin/pasang.php';
+        exit(0);
+
     case '':
         $kode = 0;
         break;
@@ -71,6 +76,11 @@ echo <<<BANTUAN
       log-error [<kode>] [--jumlah=10]
                                      Menampilkan kesalahan terakhir dari log error, atau satu
                                      kesalahan lengkap menurut kode di halaman error
+
+    Dengan paket adems/dapur-database:
+
+      pasang [<modul>] [--periksa] [--ya]
+                                     Membuat dan memperbarui tabel database semua modul
 
     Dengan paket adems/dapur-multiwebsite:
 

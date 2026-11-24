@@ -232,6 +232,7 @@ php dapur                     # daftar perintah
 php dapur clear-config-cache
 php dapur cek-database
 php dapur log-error           # kesalahan terakhir; lihat bagian Log Error
+php dapur pasang              # membuat/memperbarui tabel modul; lihat bagian Memasang tabel modul
 ```
 
 Bila paket [adems/dapur-multiwebsite](https://github.com/AdeMS/dapur-multiwebsite) terpasang, perintah
@@ -743,6 +744,44 @@ Sudah diuji dengan MariaDB 10.7, PostgreSQL 17, dan SQLite 3.
 | `could not find driver` | Ekstensi PDO untuk database tersebut belum aktif di PHP. |
 | `Access denied for user ...` | Username atau password salah, atau user database tidak diizinkan dari host tersebut. Di MySQL/MariaDB, `localhost` (lewat socket) dan `127.0.0.1` (lewat TCP) dianggap host yang berbeda. |
 | `Connection refused` | Server database tidak berjalan, atau `hostname`/`port` salah. |
+
+### Memasang tabel modul
+
+Modul yang menyimpan data di database, misalnya [adems/dapur-user](https://github.com/AdeMS/dapur-user), membawa
+daftar tabelnya sendiri. Semua tabel itu dibuat dan diperbarui dengan satu perintah, yang disediakan paket
+[adems/dapur-database](https://github.com/AdeMS/dapur-database) (biasanya ikut terpasang bersama modul yang
+membutuhkannya):
+
+```bash
+php dapur pasang              # tampilkan rencana, lalu tanya [y/N] sebelum dijalankan
+php dapur pasang --periksa    # hanya tampilkan rencana, database tidak diubah
+php dapur pasang --ya         # jalankan tanpa bertanya, misalnya dari skrip
+php dapur pasang user         # hanya modul user (beserta modul yang dibutuhkannya)
+```
+
+Jalankan `php dapur pasang` setiap kali memasang modul baru atau memperbarui modul. Perintah ini:
+
+- membuat tabel yang belum ada, dan menambahkan kolom serta indeks baru ke tabel lama tanpa mengubah datanya;
+- menjalankan langkah perubahan data yang dibawa versi baru, masing-masing sekali saja (dicatat di tabel
+  `dapur_skema`);
+- **tidak pernah** menghapus tabel atau kolom, dan tidak mengubah tipe kolom;
+- menolak berjalan bila `pasang` lain sedang berjalan untuk database yang sama.
+
+Bila satu database dipakai bersama aplikasi lain, beri awalan nama tabel di `config/autoload/database.local.php`:
+
+```php
+return [
+    'db'       => [/* ... */],
+    'database' => ['awalan_tabel' => 'situs_'],   // situs_user, situs_user_akses, situs_dapur_skema, ...
+];
+```
+
+Tentukan awalan sebelum `pasang` pertama kali. Mengganti awalan sesudahnya tidak memindahkan tabel lama; tabel baru
+akan dibuat dengan nama baru. Dengan paket multi-website, `php dapur pasang --website=contoh.com` memasang tabel
+modul pilihan website itu di database website itu.
+
+> Cara modul mendaftarkan tabelnya ada di README
+> [adems/dapur-database](https://github.com/AdeMS/dapur-database).
 
 ### Memakai koneksi di handler
 

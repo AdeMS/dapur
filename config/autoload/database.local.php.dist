@@ -36,4 +36,10 @@ return [
         // 'driver'   => 'Pdo_Sqlite',
         // 'database' => dirname(__DIR__, 2) . '/data/database/dapur.sqlite',
     ],
+
+    // Awalan nama tabel semua modul (pilihan), mis. 'situs_' menghasilkan situs_user, situs_user_akses, dan
+    // seterusnya. Berguna bila satu database dipakai bersama aplikasi lain. Lihat README bagian "Memasang tabel modul".
+    // 'database' => [
+    //     'awalan_tabel' => 'situs_',
+    // ],
 ];

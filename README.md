@@ -52,18 +52,19 @@ menambahkan halaman Anda sendiri.
    composer install
    ```
 
-   Kedua cara di atas otomatis menyalin aset Bootstrap dan Bootstrap Icons ke folder
-   `public/asset/bootstrap`. Jika perlu menyalin ulang, jalankan:
+   Kedua cara di atas otomatis menyiapkan Bootstrap dan Bootstrap Icons lewat skrip PHP
+   `bin/setup-bootstrap.php` (berjalan juga di Windows). Jika perlu mengulanginya, jalankan:
 
    ```bash
    composer setup-bootstrap
-   composer setup-bootstrap-icons
    ```
 
-   > **Catatan untuk Windows:** penyalinan aset memakai perintah `rm` dan `cp`, yang tidak
-   > tersedia di Command Prompt, sehingga langkah ini akan gagal. Salin foldernya secara manual:
-   > - `vendor/twbs/bootstrap/dist` → `public/asset/bootstrap`
-   > - `vendor/twbs/bootstrap-icons/font` → `public/asset/bootstrap/font`
+   > **Bootstrap lewat modul aset:** bila modul [adems/dapur-asset](https://github.com/AdeMS/dapur-asset)
+   > (ikut bersama Dashboard 2.9) dicantumkan di `config/modul.local.php`, Bootstrap dilayani lewat PHP langsung
+   > dari paket Composer di `/asset/twbs/bootstrap/<versi>/...`, sehingga versinya bisa dipilih per website di
+   > halaman **Aset** dashboard dan aksesnya bisa dikontrol. Salinan di `public/asset/bootstrap` tidak diperlukan
+   > lagi dan dihapus oleh `composer setup-bootstrap`; alamat lama `/asset/bootstrap/...` tetap dilayani sampai
+   > Dapur 3.0. Tanpa modul itu, Bootstrap disalin ke `public/asset/bootstrap` seperti biasa.
 
 2. Jalankan server pengembangan:
 
@@ -255,8 +256,8 @@ composer dapur -- buat-website contoh.com --alias=www.contoh.com
 | `composer development-enable` | Menyalakan mode development (lihat bagian Mode Development) |
 | `composer development-disable` | Mematikan mode development |
 | `composer development-status` | Menampilkan apakah mode development sedang aktif |
-| `composer setup-bootstrap` | Menyalin ulang aset Bootstrap ke `public/asset/bootstrap` |
-| `composer setup-bootstrap-icons` | Menyalin ulang Bootstrap Icons ke `public/asset/bootstrap/font` |
+| `composer setup-bootstrap` | Menyiapkan ulang Bootstrap dan Bootstrap Icons (disalin ke `public/asset/bootstrap`, atau dilayani modul aset bila aktif) |
+| `composer setup-bootstrap-icons` | Nama lama untuk `composer setup-bootstrap` |
 
 ## Membuat Halaman Home
 

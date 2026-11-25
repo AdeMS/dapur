@@ -22,10 +22,21 @@ $menuKanan   = trim($this->placeholder()->toString('menu-kanan'));
 
         <?= $this->headTitle() ?>
 
+<?php
+// Alamat Bootstrap: lewat helper aset() bila modul adems/dapur-asset terpasang (versi bisa dipilih per website),
+// selain itu salinan bawaan di /asset/bootstrap/.
+$aset = function (string $nama, string $file, string $cadangan): string {
+    try {
+        return $this->aset($nama, $file, $cadangan);
+    } catch (\Laminas\View\Exception\RenderingFailedException) {
+        return $cadangan;
+    }
+};
+?>
         <script src="/asset/dapur/js/tema.js"></script>
         <link href="/asset/adems/img/favicon.ico" rel="shortcut icon" />
-        <link href="/asset/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <link href="/asset/bootstrap/font/bootstrap-icons.min.css" rel="stylesheet">
+        <link href="<?= $this->escapeHtmlAttr($aset('twbs/bootstrap', 'css/bootstrap.min.css', '/asset/bootstrap/css/bootstrap.min.css')) ?>" rel="stylesheet">
+        <link href="<?= $this->escapeHtmlAttr($aset('twbs/bootstrap-icons', 'bootstrap-icons.min.css', '/asset/bootstrap/font/bootstrap-icons.min.css')) ?>" rel="stylesheet">
         <link href="/asset/dapur/css/style.css" rel="stylesheet">
     </head>
     <body class="d-flex flex-column h-100">
@@ -122,7 +133,7 @@ $menuKanan   = trim($this->placeholder()->toString('menu-kanan'));
                 <span class="small"><a href="https://github.com/AdeMS/dapur" class="text-decoration-none">Dapur AdeMS</a> adalah bagian dari <a href="https://www.adems.id/" class="text-decoration-none">Tempat AdeMS</a>, tempat Ade M Saragih untuk bermain dan belajar.</span>
             </div>
         </footer>
-        <script src="/asset/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="<?= $this->escapeHtmlAttr($aset('twbs/bootstrap', 'js/bootstrap.bundle.min.js', '/asset/bootstrap/js/bootstrap.bundle.min.js')) ?>"></script>
 <?php if ($menuSamping !== '') : ?>
         <script src="/asset/dapur/js/samping.js"></script>
 <?php endif ?>

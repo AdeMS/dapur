@@ -66,12 +66,10 @@
     "scripts": {
         "post-install-cmd": [
             "@setup-bootstrap",
-            "@setup-bootstrap-icons",
             "@clear-config-cache"
         ],
         "post-update-cmd": [
             "@setup-bootstrap",
-            "@setup-bootstrap-icons",
             "@clear-config-cache"
         ],
         "dapur": "php dapur",
@@ -84,14 +82,8 @@
           "Composer\\Config::disableProcessTimeout",
           "php -S 0.0.0.0:8080 -t public/"
         ],
-        "setup-bootstrap": [
-            "rm -rf public/asset/bootstrap",
-            "cp -R vendor/twbs/bootstrap/dist public/asset/bootstrap"
-        ],
-        "setup-bootstrap-icons": [
-            "rm -rf public/asset/bootstrap/font",
-            "cp -R vendor/twbs/bootstrap-icons/font public/asset/bootstrap/font"
-        ]
+        "setup-bootstrap": "php bin/setup-bootstrap.php",
+        "setup-bootstrap-icons": "@setup-bootstrap"
     },
     "require-dev": {
         "laminas/laminas-development-mode": "^3.15",

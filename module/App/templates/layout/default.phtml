@@ -23,8 +23,9 @@ $menuKanan   = trim($this->placeholder()->toString('menu-kanan'));
         <?= $this->headTitle() ?>
 
 <?php
-// Alamat Bootstrap: lewat helper aset() bila modul adems/dapur-asset terpasang (versi bisa dipilih per website),
-// selain itu salinan bawaan di /asset/bootstrap/.
+// Alamat Bootstrap dan file inti (adems/dapur: CSS, JS, gambar): lewat helper aset() bila modul adems/dapur-asset
+// terpasang (dilayani PHP; alamat ikut berubah saat versi atau isi file berubah), selain itu salinan di public/asset/
+// yang dibuat bin/setup-bootstrap.php.
 $aset = function (string $nama, string $file, string $cadangan): string {
     try {
         return $this->aset($nama, $file, $cadangan);
@@ -33,18 +34,18 @@ $aset = function (string $nama, string $file, string $cadangan): string {
     }
 };
 ?>
-        <script src="/asset/dapur/js/tema.js"></script>
-        <link href="/asset/adems/img/favicon.ico" rel="shortcut icon" />
+        <script src="<?= $this->escapeHtmlAttr($aset('adems/dapur', 'js/tema.js', '/asset/dapur/js/tema.js')) ?>"></script>
+        <link href="<?= $this->escapeHtmlAttr($aset('adems/dapur', 'img/favicon.ico', '/asset/dapur/img/favicon.ico')) ?>" rel="shortcut icon" />
         <link href="<?= $this->escapeHtmlAttr($aset('twbs/bootstrap', 'css/bootstrap.min.css', '/asset/bootstrap/css/bootstrap.min.css')) ?>" rel="stylesheet">
         <link href="<?= $this->escapeHtmlAttr($aset('twbs/bootstrap-icons', 'bootstrap-icons.min.css', '/asset/bootstrap/font/bootstrap-icons.min.css')) ?>" rel="stylesheet">
-        <link href="/asset/dapur/css/style.css" rel="stylesheet">
+        <link href="<?= $this->escapeHtmlAttr($aset('adems/dapur', 'css/style.css', '/asset/dapur/css/style.css')) ?>" rel="stylesheet">
     </head>
     <body class="d-flex flex-column h-100">
         <header>
             <nav class="navbar navbar-expand-lg fixed-top dapur-bingkai">
                 <div class="container-fluid">
-                    <a class="navbar-brand py-0" href="https://github.com/AdeMS/dapur">
-                        <img src="/asset/dapur/img/brand-logo.png" alt="Dapur AdeMS" height="40" />
+                    <a class="navbar-brand py-0" href="/">
+                        <img src="<?= $this->escapeHtmlAttr($aset('adems/dapur', 'img/brand-logo.png', '/asset/dapur/img/brand-logo.png')) ?>" alt="Dapur AdeMS" height="40" />
                     </a>
                     <!--
                         Kelompok tombol (pemilih tema + placeholder 'menu-alat'), lalu placeholder 'menu-kanan':
@@ -135,7 +136,7 @@ $aset = function (string $nama, string $file, string $cadangan): string {
         </footer>
         <script src="<?= $this->escapeHtmlAttr($aset('twbs/bootstrap', 'js/bootstrap.bundle.min.js', '/asset/bootstrap/js/bootstrap.bundle.min.js')) ?>"></script>
 <?php if ($menuSamping !== '') : ?>
-        <script src="/asset/dapur/js/samping.js"></script>
+        <script src="<?= $this->escapeHtmlAttr($aset('adems/dapur', 'js/samping.js', '/asset/dapur/js/samping.js')) ?>"></script>
 <?php endif ?>
     </body>
 </html>

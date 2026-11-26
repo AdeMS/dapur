@@ -8,7 +8,7 @@
  *
  * `data-tema` pada <html> memilih tema warna, sedangkan `data-bs-theme`
  * memilih mode terang (light) atau gelap (dark). Mode diatur oleh
- * /asset/dapur/js/tema.js sesuai pilihan pengunjung.
+ * js/tema.js (aset adems/dapur) sesuai pilihan pengunjung.
  */
 
 /* Tema Dapur, mode terang */
@@ -170,7 +170,7 @@
  */
 body {
     background-attachment: fixed;
-    background-image: url('/asset/dapur/img/bg-image.png');
+    background-image: url('../img/bg-image.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -221,7 +221,7 @@ body {
 [data-bs-theme=dark] body {
     background-image:
         linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
-        url('/asset/dapur/img/bg-image.png');
+        url('../img/bg-image.png');
 }
 
 /* Mode gelap: beri garis tepi pada elemen berwarna gelap agar tidak menyatu dengan panel */
@@ -495,15 +495,8 @@ a:hover {
         background-color: var(--dapur-bingkai-bg);
         border: 1px solid var(--bs-border-color);
     }
-    /* Tepi bercahaya hijau tipis, sama seperti menu dropdown (lebih kuat di mode terang) */
-    [data-tema=dapur] .dapur-samping {
-        border-color: rgba(111, 207, 151, .35);
-        box-shadow: 0 0 .5rem rgba(111, 207, 151, .3);
-    }
-    [data-tema=dapur][data-bs-theme=light] .dapur-samping {
-        border-color: rgba(111, 207, 151, .6);
-        box-shadow: 0 0 .6rem rgba(111, 207, 151, .55);
-    }
+    /* Di layar lebar menu samping tidak bercahaya (tepi biasa seperti kartu isi halaman); tepi bercahaya hijau hanya
+       saat tampil sebagai popup dari tombol hamburger di layar kecil (lihat #dapurSamping.offcanvas-lg di atas). */
     /* Isi halaman di samping menu memenuhi kolomnya: .container milik halaman tidak menambah batas lebar dan
        jarak tepi sendiri, sehingga tepi kanannya sejajar dengan wadah (dan menu kanan navbar) */
     .dapur-samping-isi > .container {

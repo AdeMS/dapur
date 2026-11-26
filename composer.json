@@ -32,6 +32,11 @@
                 "laminas/laminas-db"
             ]
         },
+        "dapur": {
+            "asset": {
+                "adems/dapur": "module/App/asset"
+            }
+        },
         "merge-plugin": {
             "include": [
                 "composer.local.json"
@@ -84,6 +89,9 @@
         ],
         "setup-bootstrap": "php bin/setup-bootstrap.php",
         "setup-bootstrap-icons": "@setup-bootstrap"
+    },
+    "conflict": {
+        "adems/dapur-asset": "<1.1"
     },
     "require-dev": {
         "laminas/laminas-development-mode": "^3.15",

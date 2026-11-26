@@ -52,19 +52,28 @@ menambahkan halaman Anda sendiri.
    composer install
    ```
 
-   Kedua cara di atas otomatis menyiapkan Bootstrap dan Bootstrap Icons lewat skrip PHP
-   `bin/setup-bootstrap.php` (berjalan juga di Windows). Jika perlu mengulanginya, jalankan:
+   Kedua cara di atas otomatis menyiapkan Bootstrap, Bootstrap Icons, dan file tampilan inti (`module/App/asset`)
+   lewat skrip PHP `bin/setup-bootstrap.php` (berjalan juga di Windows). Jika perlu mengulanginya, jalankan:
 
    ```bash
    composer setup-bootstrap
    ```
 
-   > **Bootstrap lewat modul aset:** bila modul [adems/dapur-asset](https://github.com/AdeMS/dapur-asset)
-   > (ikut bersama Dashboard 2.9) dicantumkan di `config/modul.local.php`, Bootstrap dilayani lewat PHP langsung
-   > dari paket Composer di `/asset/twbs/bootstrap/<versi>/...`, sehingga versinya bisa dipilih per website di
-   > halaman **Aset** dashboard dan aksesnya bisa dikontrol. Salinan di `public/asset/bootstrap` tidak diperlukan
-   > lagi dan dihapus oleh `composer setup-bootstrap`; alamat lama `/asset/bootstrap/...` tetap dilayani sampai
-   > Dapur 3.0. Tanpa modul itu, Bootstrap disalin ke `public/asset/bootstrap` seperti biasa.
+   > **Lewat modul aset:** bila modul [adems/dapur-asset](https://github.com/AdeMS/dapur-asset) 1.1 ke atas
+   > (ikut bersama Dashboard 2.9) dicantumkan di `config/modul.local.php`, semuanya dilayani lewat PHP:
+   >
+   > - Bootstrap langsung dari paket Composer di `/asset/twbs/bootstrap/<versi>/...`, sehingga versinya bisa
+   >   dipilih per website di halaman **Aset** dashboard;
+   > - file tampilan inti dari folder `module/App/asset` di `/asset/adems/dapur/...?v=<waktu ubah file>`. Folder ini
+   >   dinyatakan sebagai aset `adems/dapur` di `composer.json` inti (`extra.dapur.asset`). Karena alamatnya ikut
+   >   berubah setiap kali filenya berubah, browser boleh menyimpannya lama, tetapi langsung mengambil file baru
+   >   sesudah pembaruan.
+   >
+   > Salinan di `public/asset` tidak diperlukan lagi dan dihapus oleh `composer setup-bootstrap` (di
+   > `public/asset/dapur` hanya file yang sama persis dengan aslinya; file lain dibiarkan). Alamat lama
+   > `/asset/bootstrap/...`, `/asset/dapur/...`, dan `/asset/adems/img/favicon.ico` tetap dilayani sampai Dapur 3.0.
+   > Tanpa modul itu, Bootstrap disalin ke `public/asset/bootstrap` dan `module/App/asset` ke `public/asset/dapur`
+   > seperti biasa. Ubahlah file di `module/App/asset`, bukan salinannya: salinan ditimpa setiap `composer update`.
 
 2. Jalankan server pengembangan:
 
@@ -102,7 +111,8 @@ dapur/
 ├── bin/
 │   ├── cek-database.php             ← menguji koneksi database
 │   ├── clear-config-cache.php       ← menghapus cache konfigurasi
-│   └── log-error.php                ← menampilkan log error
+│   ├── log-error.php                ← menampilkan log error
+│   └── setup-bootstrap.php          ← menyiapkan Bootstrap dan file inti untuk layout
 ├── config/
 │   ├── autoload/
 │   │   ├── cache.global.php         ← pengaturan cache
@@ -123,6 +133,10 @@ dapur/
 │   └── log/error.log                ← log error (dibuat otomatis, tidak masuk Git)
 ├── module/
 │   └── App/                         ← modul bawaan Dapur AdeMS
+│       ├── asset/                   ← file tampilan inti (aset adems/dapur), di luar public/
+│       │   ├── css/style.css        ← tema warna dan gaya Dapur AdeMS
+│       │   ├── img/                 ← logo, gambar latar, dan favicon
+│       │   └── js/                  ← tema.js (pemilih tema) dan samping.js (menu samping)
 │       ├── src/
 │       │   ├── Cache/               ← factory cache PSR-6 dan PSR-16
 │       │   ├── Db/                  ← factory koneksi database
@@ -135,12 +149,9 @@ dapur/
 │           └── layout/              ← layout::default
 └── public/                          ← document root web server
     ├── .htaccess                    ← aturan Apache (rewrite dan pengalihan ke HTTPS)
-    ├── asset/
-    │   ├── bootstrap/               ← aset Bootstrap (disalin otomatis, tidak masuk Git)
-    │   └── dapur/
-    │       ├── css/style.css        ← tema warna dan gaya Dapur AdeMS
-    │       ├── img/                 ← logo dan gambar latar
-    │       └── js/tema.js           ← pemilih tema terang, gelap, dan otomatis
+    ├── asset/                       ← hanya bila modul aset tidak dipakai (disalin otomatis, tidak masuk Git):
+    │   ├── bootstrap/               ←   salinan Bootstrap dan Bootstrap Icons
+    │   └── dapur/                   ←   salinan module/App/asset
     └── index.php                    ← pintu masuk aplikasi
 ```
 
@@ -256,7 +267,7 @@ composer dapur -- buat-website contoh.com --alias=www.contoh.com
 | `composer development-enable` | Menyalakan mode development (lihat bagian Mode Development) |
 | `composer development-disable` | Mematikan mode development |
 | `composer development-status` | Menampilkan apakah mode development sedang aktif |
-| `composer setup-bootstrap` | Menyiapkan ulang Bootstrap dan Bootstrap Icons (disalin ke `public/asset/bootstrap`, atau dilayani modul aset bila aktif) |
+| `composer setup-bootstrap` | Menyiapkan ulang Bootstrap, Bootstrap Icons, dan file tampilan inti (disalin ke `public/asset`, atau dilayani modul aset bila aktif) |
 | `composer setup-bootstrap-icons` | Nama lama untuk `composer setup-bootstrap` |
 
 ## Membuat Halaman Home
@@ -298,7 +309,7 @@ Ikon di ujung kanan navbar membuka pilihan tema:
 | **Otomatis** | Mengikuti pengaturan terang/gelap di perangkat pengunjung (bawaan) |
 
 Pilihan pengunjung disimpan di browser (`localStorage`), sehingga tetap berlaku saat website
-dibuka kembali. Tema diterapkan oleh `public/asset/dapur/js/tema.js` sebelum halaman tampil,
+dibuka kembali. Tema diterapkan oleh `module/App/asset/js/tema.js` sebelum halaman tampil,
 jadi tidak ada kedipan warna saat halaman dimuat.
 
 Template Anda sebaiknya memakai kelas warna Bootstrap yang mengikuti tema, misalnya
@@ -373,7 +384,7 @@ di atas item. Halaman tanpa item menu samping tampil seperti biasa tanpa panel d
 
 ### Mengubah warna tema
 
-Warna tema Dapur diatur dengan variabel CSS di `public/asset/dapur/css/style.css`, pada
+Warna tema Dapur diatur dengan variabel CSS di `module/App/asset/css/style.css`, pada
 bagian `[data-tema=dapur]` (mode terang) dan `[data-tema=dapur][data-bs-theme=dark]` (mode
 gelap):
 

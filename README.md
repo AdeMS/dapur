@@ -74,6 +74,11 @@ menambahkan halaman Anda sendiri.
    > `/asset/bootstrap/...`, `/asset/dapur/...`, dan `/asset/adems/img/favicon.ico` tetap dilayani sampai Dapur 3.0.
    > Tanpa modul itu, Bootstrap disalin ke `public/asset/bootstrap` dan `module/App/asset` ke `public/asset/dapur`
    > seperti biasa. Ubahlah file di `module/App/asset`, bukan salinannya: salinan ditimpa setiap `composer update`.
+   >
+   > Folder `public/asset` sendiri selalu ada (berisi `.gitkeep`), walaupun kosong. Website mode folder domain buatan
+   > `buat-website` ([adems/dapur-multiwebsite](https://github.com/AdeMS/dapur-multiwebsite)) punya symlink
+   > `public/asset` yang menunjuk ke folder ini; tanpa foldernya, symlink itu patah dan web server menolak semua alamat
+   > `/asset/...` di website tersebut. Bila modul aset aktif, symlink itu tidak diperlukan lagi dan boleh dihapus.
 
 2. Jalankan server pengembangan:
 
@@ -149,9 +154,9 @@ dapur/
 │           └── layout/              ← layout::default
 └── public/                          ← document root web server
     ├── .htaccess                    ← aturan Apache (rewrite dan pengalihan ke HTTPS)
-    ├── asset/                       ← hanya bila modul aset tidak dipakai (disalin otomatis, tidak masuk Git):
-    │   ├── bootstrap/               ←   salinan Bootstrap dan Bootstrap Icons
-    │   └── dapur/                   ←   salinan module/App/asset
+    ├── asset/                       ← folder selalu ada (.gitkeep); isinya hanya bila modul aset tidak dipakai
+    │   ├── bootstrap/               ←   salinan Bootstrap dan Bootstrap Icons (disalin otomatis, tidak masuk Git)
+    │   └── dapur/                   ←   salinan module/App/asset (disalin otomatis, tidak masuk Git)
     └── index.php                    ← pintu masuk aplikasi
 ```
 
